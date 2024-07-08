@@ -1,0 +1,10 @@
+
+*.vbs
+*.log
+
+./*.pdf
+
+target/
+trash/
+.idea/
+
