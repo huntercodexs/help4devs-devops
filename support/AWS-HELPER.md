@@ -1084,7 +1084,7 @@ Choose one type of lambda function:
 [Basic information]
 
 Funcation name: hello-world-lambda-function-java
-Runtime: Java 8+
+Runtime: Java 17
 Architecture: x86_64
 
 [Permissions]
@@ -1106,8 +1106,58 @@ follow another way to get everything done.
 
 Follow the steps below to put Java application running in the lambda function.
 
-- 
+> Please use the sample project placed in the link: https://github.com/huntercodexs/help4devs-aws
 
+- Clone the repository from https://github.com/huntercodexs/help4devs-aws
+- Open the project from the repository in the IDE IntelliJ
+- Check the pom.xml file and the README from that repository
+- Go to Maven Tab in the IDE
+- Lookup for Maven commands and run the maven package or maven install
+- Get the jar file generated in this step
+- Now, go back to AWS Lambda services and get access in the target lambda function
+- Go to "Code source" section and click on "Upload from" button on the right of the section
+- Choose .zip or .jar file and select the target jar file
+- After that wait the upload complete
+- Since the jar file was send successfully click on the "Test Tab"
+- Fill the form to make a test
+
+<pre>
+[Test event]
+
+Test event action: Create new event
+Event name: test-event
+Event sharing settings: Private
+Template - optional: Choose the related template
+</pre>
+
+- Click on Test button above the current section
+
+> NOTE: In this case you also can see the log process at the Cloud Watch in the "Logs->Log groups"
+
+Finally, it's possible to make a test using a more convenient way using Function URL, so follow the steps below if 
+you desire to do that
+
+- Click on "Configuration Tab" in the current lambda function
+- Click on the "Function URL" on the left menu of the screen
+- You must be able to see the URL from the section "Function URL", something like below
+
+> https://fxwsvhqmdksobfcmov3extc6tm0kzngq.lambda-url.us-east-1.on.aws/
+
+- Get this URL and make a test using any HTTP client, for example: POSTMAN, INSOMNIA, etc.
+
+[Example]
+
+REQUEST
+<pre>
+POST https://fxwsvhqmdksobfcmov3extc6tm0kzngq.lambda-url.us-east-1.on.aws/
+</pre>
+
+RESPONSE
+<pre>
+{
+  "result": true
+}
+</pre>
 
 <br /><br />
 <a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
