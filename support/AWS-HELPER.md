@@ -965,7 +965,174 @@ can be found in the message clicking on the link message and going to "Details T
 
 #### Practical Example using Lambda
 
+In this topic we will create a sample integration between SQS and LAMBDA functions, and to do that the following 
+steps need to be done.
+
+- Goto SQS dashboard and lookup for Queues
+- Click on Create queue button
+- Fill the form as follows
+
+<pre>
+[Details]
+Type: FIFO
+Name: queue-test.fifo
+
+[Configuration]
+Visibility timeout: 30 (seconds) ## This means how long time the message should be visible
+Message retention period: 4 days
+Delivery delay: 0 seconds
+Maximum message size: 256KB
+Receive message wait time: 0 seconds
+
+[FIFO queue settings] ## This configuration avoid deduplication in the Message group
+Content-based deduplication: Mark
+High throughput FIFO queue (recommended): Mark
+
+[Encryption]
+Server-side encryption: Enabled
+Encryption key type: Amazon SQS key (SSE-SQS)
+
+[Access policy]
+Choose method: Basic
+Define who can send messages to the queue: Only the queue owner
+Define who can receive messages from the queue: Only the queue owner
+
+[Redrive allow policy]
+Select which source queues can use this queue as the dead-letter queue.: Disabled
+
+[Dead-letter queue]
+Set this queue to receive undeliverable messages: Disabled
+
+[Tags - Optional]
+let as is
+</pre>
+
+- Click on Create queue button
+
+Now, we need to create the integration with Lambda function, so fow now go further in the steps below
+
+- Goto AWS Lambda resources
+- Click on Create function button and fill the form as follows
+
+<pre>
+[Create function]
+Choose one type of lambda function: 
+  Author from scratch: Marked
+  Use a blueprint
+  Container image
+
+[Basic information]
+
+Function name: lambda-function-test
+Runtime: Python 3.9
+Architecture: x86_64
+
+[Permissions]
+let as is
+
+Change default execution role: Create a new role with basic Lambda permissions
+
+[Advanced settings]
+let as is
+</pre>
+
+- Choose Create function button
+
+You must be able to see the "Code source" section ready to code including one sample Python 3.9 code, for example:
+
+![aws-sqs-lambda-sample-python-code.png](midias/images/aws-sqs-lambda-sample-python-code.png)
+
+For now, just click on Deploy button according showed the above image, and make one more configuration but in that 
+time using the "Configuration Tab" from the target lambda function.
+
+- Click on Permissions item in the menu on the left side of the screen
+- Now click on the link named "Role name" lambda-function-test-role-8tjqcqvx
+
+You will be redirected to IAM dashboard manager, so go ahead and make the required changes in the SQS role
+
+- In the Permissions policies click on "Add permissions" button and select "Attach policies"
+
+![aws-sqs-permissions-lambda.png](midias/images/aws-sqs-permissions-lambda.png)
+
+- Type "sqs" in the input text to filter the permissions policies according as image below
+
+![aws-permissions-policies-sqs-filter.png](midias/images/aws-permissions-policies-sqs-filter.png)
+
+- Choose the "AWSLambdaSQSQueueExecutionRole"
+- Click on "Add permissions" button at the same screen
+
+The resource policy should be something like below
+
+<pre>
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "sqs:ReceiveMessage",
+                "sqs:DeleteMessage",
+                "sqs:GetQueueAttributes",
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+</pre>
+
+OK, now lets go back for SQS dashboard and get access to the target queue.
+
+- Click on "Configure Lambda function trigger" button
+- In the field "Specify an AWS Lambda function available for this queue.", choose the lambda function created above
+- Click on Save
+- OK, the SQS queue is done
+- Now go back to target lambda function and get access the "Code Tab"
+
+Check this code
+
+<pre>
+import json
+
+def lambda_handler(event, context):
+    print(event)
+    for record in event.get('Records'):
+        body = json.loads(record.get('body'))
+        id = body.get('id')
+        name = body.get('name')
+        print(f'Id: {id}, Name: {name}')
+        return {
+            'statusCode': 200,
+            'body': json.dumps('Hello from Lambda!')
+        }
+</pre>
+
+The code below belong to the lambda function just created and have the unique and simple responsibility to print the 
+event from SQS queue services because web have had configured the SQS to use this lambda function.
+
+- So, go to SQS queue target again
+- Click on "Send and receive messages" button
+- Fill the form with related information and click on Send message
+
+[Message]
+
+<pre>
+Message body: {"id":1, "name": "John Smith"}
+Message group ID: payment
+</pre>
+
+- If everything was fine, goto Cloud Watch to check if the messages were processed correctly
+- Choose Logs->Log group->Log stream
+- The result should be something like that
+
+![aws-sqs-lambda-cloud-watch.png](midias/images/aws-sqs-lambda-cloud-watch.png)
+
 #### Practical Example Using Java
+
+...
+
 
 <br /><br />
 <a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
@@ -1016,7 +1183,7 @@ Choose one type of lambda function:
 
 [Basic information]
 
-Funcation name: hello-world-lambda-function-py
+Function name: hello-world-lambda-function-py
 Runtime: Python 3.12
 Architecture: x86_64
 
@@ -1083,7 +1250,7 @@ Choose one type of lambda function:
 
 [Basic information]
 
-Funcation name: hello-world-lambda-function-java
+Function name: hello-world-lambda-function-java
 Runtime: Java 17
 Architecture: x86_64
 
