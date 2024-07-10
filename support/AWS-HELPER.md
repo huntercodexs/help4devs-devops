@@ -1754,7 +1754,7 @@ have an account.
 - In this case we are going to install Local Stack in the Ubuntu 20.04 (Linux)
 - Follow the instructions in that page, that currently are:
 
-###### Using Local Stack CLI
+###### Using LocalStack CLI
 
 [Download Local Stack]
 
@@ -1821,8 +1821,8 @@ services:
     container_name: "${LOCALSTACK_DOCKER_NAME:-localstack-main}"
     image: localstack/localstack
     ports:
-      - "4566:4566"            # LocalStack Gateway
-      - "4510-4559:4510-4559"  # external services port range
+      - "127.0.0.1:4566:4566"            # LocalStack Gateway
+      - "127.0.0.1:4510-4559:4510-4559"  # external services port range
     environment:
       # LocalStack configuration: https://docs.localstack.cloud/references/configuration/
       - DEBUG=${DEBUG:-0}
@@ -1897,6 +1897,22 @@ localstack-main   docker-entrypoint.sh   Up (healthy)   0.0.0.0:4510->4510/tcp,:
                                                         0.0.0.0:4558->4558/tcp,:::4558->4558/tcp, 0.0.0.0:4559->4559/tcp,:::4559->4559/tcp, 
                                                         0.0.0.0:4566->4566/tcp,:::4566->4566/tcp, 5678/tcp                                  
 </pre>
+
+#### Using LocalStack Desktop
+
+There is other one type of Local Stack installation through AppImage, you can get the application image from the URL
+https://app.localstack.cloud/download. After access this URL, choose the OS target, for example Linux, and get the 
+file download. So when the download is finished, just click on the file downloaded using the right button of the mouse 
+click on Properties, and lookup for "Permissions Tab", in that tab you need to enable ou allow the AppImage file for 
+running like as a program, look at below ons example.
+
+![localstack-desktop-app-image-enable.png](midias/images/localstack-desktop-app-image-enable.png)
+
+The Local Stack Desktop will be running like a proper program in your machine, it probably will be something like below
+
+![localstack-desktop-running.png](midias/images/localstack-desktop-running.png)
+
+> NOTE: Login is required, so make sure you have a account already created and activated.
 
 #### Local Stack Dashboard
 
