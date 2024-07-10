@@ -47,6 +47,7 @@ A simple instructions to help developers in overall cases to make configurations
 - <a href="#COSTS-ESTIMATES">COSTS ESTIMATES</a>
 - <a href="#AWS-NETWORKING">AWS NETWORKING</a>
 - <a href="#S3-ROUTE53-ACM-CLOUD-FRONT">S3 ROUTE53 ACM CLOUD FRONT</a>
+- <a href="#LOCALSTACK">LOCALSTACK</a>
 
 <br /><br />
 <a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
@@ -135,6 +136,8 @@ administration using a terminal in the browser.
 > To install and configure the amazon aws-cli follow the instructions in the follow page from AWS DOCS
 https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
 
+#### Installing
+
 [Linux Installing]
 
 <pre>
@@ -155,7 +158,11 @@ sudo ./aws/install --bin-dir /usr/local/bin --install-dir /usr/local/aws-cli --u
 
 <pre>
 aws --version
+
+aws-cli/2.17.7 Python/3.11.8 Linux/5.15.0-113-generic exe/x86_64.ubuntu.20
 </pre>
+
+#### Configuring
 
 [AWS CLI Configuration]
 
@@ -190,6 +197,22 @@ aws ec2 describe-instances
 </pre>
 
 To get more details see the https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-welcome.html
+
+#### Commands
+
+###### S3
+###### SQS
+###### LAMBDA
+###### VPC
+###### EC2
+###### ECS
+###### EKS
+###### ROUTE53
+###### RDS
+###### DYNAMODB
+###### API-GATEWAY
+###### ACM
+###### ACL
 
 <br /><br />
 <a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
@@ -1710,9 +1733,225 @@ follows below:
             - DATABASE
               - RDS: MYSQL
 
+<br /><br />
+<a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
+
+## LOCALSTACK
+
+Local Stack is a tool to emulate the AWS environment, you can install this tools in your local
+machine following the instructions below.
+
+#### Account Creation
+
+First of all, you need to create one account in the Local Stack website, so for that goto
+https://app.localstack.cloud/sign-in and create your account or make a login case you already 
+have an account.
+
+#### Installing
+
+- Goto https://docs.localstack.cloud/getting-started/installation
+- Lookup for "LocalStack CLI" section and choose the OS type installation
+- In this case we are going to install Local Stack in the Ubuntu 20.04 (Linux)
+- Follow the instructions in that page, that currently are:
+
+###### Using Local Stack CLI
+
+[Download Local Stack]
+
+<pre>
+mkdir LocalStack
+
+cd LocalStack
+
+curl --output localstack-cli-3.5.0-linux-amd64-onefile.tar.gz \
+    --location https://github.com/localstack/localstack-cli/releases/download/v3.5.0/localstack-cli-3.5.0-linux-amd64-onefile.tar.gz
+</pre>
+
+[Extract Local Stack]
+
+<pre>
+sudo tar xvzf localstack-cli-3.5.0-linux-*-onefile.tar.gz -C /usr/local/bin
+</pre>
+
+[Version]
+
+<pre>
+localstack --version
+</pre>
+
+<pre>
+localstack start
+</pre>
+
+The result should be something like below
+
+<pre>
+
+     __                     _______ __             __
+    / /   ____  _________ _/ / ___// /_____ ______/ /__
+   / /   / __ \/ ___/ __ `/ /\__ \/ __/ __ `/ ___/ //_/
+  / /___/ /_/ / /__/ /_/ / /___/ / /_/ /_/ / /__/ ,<
+ /_____/\____/\___/\__,_/_//____/\__/\__,_/\___/_/|_|
+
+ 💻 LocalStack CLI 3.5.0
+ 👤 Profile: default
+
+[21:08:30] starting LocalStack in Docker mode 🐳                                                                           localstack.py:503
+           container image not found on host                                                                               bootstrap.py:1272
+[21:08:55] download complete                                                                                               bootstrap.py:1276
+────────────────────────────────────────────── LocalStack Runtime Log (press CTRL-C to quit) ───────────────────────────────────────────────
+
+LocalStack version: 3.5.1.dev
+LocalStack build date: 2024-07-09
+LocalStack build git hash: b2faf9556
+
+Ready.
+
+</pre>
+
+###### Using Docker Compose
+
+Alternative it is to install via Docker Compose
+
+<pre>
+version: "3.8"
+
+services:
+  localstack:
+    container_name: "${LOCALSTACK_DOCKER_NAME:-localstack-main}"
+    image: localstack/localstack
+    ports:
+      - "4566:4566"            # LocalStack Gateway
+      - "4510-4559:4510-4559"  # external services port range
+    environment:
+      # LocalStack configuration: https://docs.localstack.cloud/references/configuration/
+      - DEBUG=${DEBUG:-0}
+    volumes:
+      - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    networks:
+        - open_network
+
+networks:
+    open_network:
+        external: true
+</pre>
+
+<pre>
+docker network create open_network
+docker-compose up
+</pre>
+
+The result should be something like below
+
+<pre>
+Digest: sha256:20444945562d6dec896ab8e856466776c1c494dcbcf8e2a66d9171c9d168660d
+Status: Downloaded newer image for localstack/localstack:latest
+Creating localstack-main ... done
+Attaching to localstack-main
+localstack-main | 
+localstack-main | LocalStack version: 3.5.1.dev
+localstack-main | LocalStack build date: 2024-07-09
+localstack-main | LocalStack build git hash: b2faf9556
+localstack-main | 
+localstack-main | Ready.
+</pre>
+
+<pre>
+localstack config validate
+</pre>
+
+<pre>
+docker-compose start
+</pre>
+
+The result must be something like below
+
+<pre>
+     Name               Command             State                                              Ports                                        
+--------------------------------------------------------------------------------------------------------------------------------------------
+localstack-main   docker-entrypoint.sh   Up (healthy)   0.0.0.0:4510->4510/tcp,:::4510->4510/tcp, 0.0.0.0:4511->4511/tcp,:::4511->4511/tcp, 
+                                                        0.0.0.0:4512->4512/tcp,:::4512->4512/tcp, 0.0.0.0:4513->4513/tcp,:::4513->4513/tcp, 
+                                                        0.0.0.0:4514->4514/tcp,:::4514->4514/tcp, 0.0.0.0:4515->4515/tcp,:::4515->4515/tcp, 
+                                                        0.0.0.0:4516->4516/tcp,:::4516->4516/tcp, 0.0.0.0:4517->4517/tcp,:::4517->4517/tcp, 
+                                                        0.0.0.0:4518->4518/tcp,:::4518->4518/tcp, 0.0.0.0:4519->4519/tcp,:::4519->4519/tcp, 
+                                                        0.0.0.0:4520->4520/tcp,:::4520->4520/tcp, 0.0.0.0:4521->4521/tcp,:::4521->4521/tcp, 
+                                                        0.0.0.0:4522->4522/tcp,:::4522->4522/tcp, 0.0.0.0:4523->4523/tcp,:::4523->4523/tcp, 
+                                                        0.0.0.0:4524->4524/tcp,:::4524->4524/tcp, 0.0.0.0:4525->4525/tcp,:::4525->4525/tcp, 
+                                                        0.0.0.0:4526->4526/tcp,:::4526->4526/tcp, 0.0.0.0:4527->4527/tcp,:::4527->4527/tcp, 
+                                                        0.0.0.0:4528->4528/tcp,:::4528->4528/tcp, 0.0.0.0:4529->4529/tcp,:::4529->4529/tcp, 
+                                                        0.0.0.0:4530->4530/tcp,:::4530->4530/tcp, 0.0.0.0:4531->4531/tcp,:::4531->4531/tcp, 
+                                                        0.0.0.0:4532->4532/tcp,:::4532->4532/tcp, 0.0.0.0:4533->4533/tcp,:::4533->4533/tcp, 
+                                                        0.0.0.0:4534->4534/tcp,:::4534->4534/tcp, 0.0.0.0:4535->4535/tcp,:::4535->4535/tcp, 
+                                                        0.0.0.0:4536->4536/tcp,:::4536->4536/tcp, 0.0.0.0:4537->4537/tcp,:::4537->4537/tcp, 
+                                                        0.0.0.0:4538->4538/tcp,:::4538->4538/tcp, 0.0.0.0:4539->4539/tcp,:::4539->4539/tcp, 
+                                                        0.0.0.0:4540->4540/tcp,:::4540->4540/tcp, 0.0.0.0:4541->4541/tcp,:::4541->4541/tcp, 
+                                                        0.0.0.0:4542->4542/tcp,:::4542->4542/tcp, 0.0.0.0:4543->4543/tcp,:::4543->4543/tcp, 
+                                                        0.0.0.0:4544->4544/tcp,:::4544->4544/tcp, 0.0.0.0:4545->4545/tcp,:::4545->4545/tcp, 
+                                                        0.0.0.0:4546->4546/tcp,:::4546->4546/tcp, 0.0.0.0:4547->4547/tcp,:::4547->4547/tcp, 
+                                                        0.0.0.0:4548->4548/tcp,:::4548->4548/tcp, 0.0.0.0:4549->4549/tcp,:::4549->4549/tcp, 
+                                                        0.0.0.0:4550->4550/tcp,:::4550->4550/tcp, 0.0.0.0:4551->4551/tcp,:::4551->4551/tcp, 
+                                                        0.0.0.0:4552->4552/tcp,:::4552->4552/tcp, 0.0.0.0:4553->4553/tcp,:::4553->4553/tcp, 
+                                                        0.0.0.0:4554->4554/tcp,:::4554->4554/tcp, 0.0.0.0:4555->4555/tcp,:::4555->4555/tcp, 
+                                                        0.0.0.0:4556->4556/tcp,:::4556->4556/tcp, 0.0.0.0:4557->4557/tcp,:::4557->4557/tcp, 
+                                                        0.0.0.0:4558->4558/tcp,:::4558->4558/tcp, 0.0.0.0:4559->4559/tcp,:::4559->4559/tcp, 
+                                                        0.0.0.0:4566->4566/tcp,:::4566->4566/tcp, 5678/tcp                                  
+</pre>
+
+#### Local Stack Dashboard
+
+Now in the Local Stack website you can see the services status from the current local installations that simulate
+one real environment on AWS Services, for example:
+
+![localstack-status-services.png](midias/images/localstack-status-services.png)
+
+#### Uninstalling
+
+<pre>
+#!/bin/bash
+
+echo "This process can't to be undo, Continue ?"
+echo "Press [Enter] to continue, Press [Ctrl+C] to Abort "
+read OP
+
+sleep 2
+
+echo "Removing localstack, folders, and links"
+sudo rm -rf /usr/local/bin/localstack
+
+sleep 2
+
+echo ""
+echo -n "Removing Docker Containers ? Continue[Y], Skip[N]: "
+read RMDOCKER
+
+if [[ "${RMDOCKER}" == "Y" ]]; 
+then
+    docker-compose stop
+    docker container rm -v localstack-main
+    docker image rm localstack/localstack:latest
+else
+    echo "OK - Skipping"
+fi
+echo ""
+
+echo "DONE"
+exit
+</pre>
+
+
+
+
+
+
+
+
 ---
 <small>
 Huntercodexs is powered by jereelton-devel
 </small>
 <br />
 <br />
+
+
+
