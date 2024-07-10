@@ -1921,6 +1921,52 @@ one real environment on AWS Services, for example:
 
 ![localstack-status-services.png](midias/images/localstack-status-services.png)
 
+#### AWS CLI Commands
+
+You can interact with LocalStack using AWS CLI, for that follow the sample below
+
+- Install the <a href="#AWS-CLI">AWS-CLI</a>
+- Open one terminal and type one command like below
+
+<pre>
+export AWS_ACCESS_KEY_ID="test"
+export AWS_SECRET_ACCESS_KEY="test"
+export AWS_DEFAULT_REGION="us-east-1"
+</pre>
+
+<pre>
+aws --endpoint-url="http://localhost:4566" s3 ls
+</pre>
+
+Also, you can to create a profile configuration file at the root path of the current user, for example.
+
+<pre>
+~/.aws/config
+</pre>
+
+<pre>
+region=us-east-1
+output=json
+endpoint_url = http://localhost:4566
+</pre>
+
+<pre>
+~/.aws/credentials
+</pre>
+
+<pre>
+[localstack]
+aws_access_key_id=test
+aws_secret_access_key=test
+</pre>
+
+You can now use the localstack profile with the aws CLI:
+
+<pre>
+aws s3 mb s3://test --profile localstack
+aws s3 ls --profile localstack
+</pre>
+
 #### Uninstalling
 
 <pre>
@@ -1934,6 +1980,16 @@ sleep 2
 
 echo "Removing localstack, folders, and links"
 sudo rm -rf /usr/local/bin/localstack
+
+sleep 2
+
+echo "Unsetting the env variables"
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+AWS_DEFAULT_REGION=
+unset AWS_ACCESS_KEY_ID
+unset AWS_SECRET_ACCESS_KEY
+unset AWS_DEFAULT_REGION=
 
 sleep 2
 
