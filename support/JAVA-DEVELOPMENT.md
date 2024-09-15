@@ -1,5 +1,64 @@
 
-# JAVA DEVELOPMENT
+# JAVA DEVELOPMENT + MAVEN
+
+### Use Maven Plugin
+
+###### Generate executable JAR file
+
+Below it is possible to see a sample configuration to use in maven and get the JAR file easier. This plugin should 
+be used when we need to generate a jar file executable in any machine or environment, it will be automatically set 
+up the correct information in the MANIFEST file.
+
+<code>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>com.huntercodexs.hardsys.Application</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</code>
+
+###### Include all dependencies in one single JAR file
+
+To include all jar dependencies in one single file use the plugin described below, you can use this plugin configuration 
+together others plugins, for example the plugin described above to generate an executable JAR file.
+
+<code>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.4</version>
+                <configuration>
+                    <createDependencyReducedPom>false</createDependencyReducedPom>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+    </build>
+
+</code>
 
 ### Configure Maven Local Repository
 
