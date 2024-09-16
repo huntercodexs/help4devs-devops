@@ -231,6 +231,9 @@ specific case is called dependency-jars path.
 
 <code>
 
+    <build>
+		<plugins>
+			<plugin>
             <!--Make Jar executable with dependency class prefix-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
