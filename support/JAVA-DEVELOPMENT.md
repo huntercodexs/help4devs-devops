@@ -21,7 +21,7 @@ up the correct information in the MANIFEST file.
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>com.huntercodexs.hardsys.Application</mainClass>
+                            <mainClass>{{MAIN-CLASS}}</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -221,6 +221,54 @@ or
 			</plugin>
 		</plugins>
 	</build>
+
+</code>
+
+###### Jar file build with copy dependencies
+
+In this case the jar file will be generated in the target path separated of dependencies used in it that's in this 
+specific case is called dependency-jars path.
+
+<code>
+
+            <!--Make Jar executable with dependency class prefix-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>{{MAIN-CLASS}}</mainClass>
+                            <classpathPrefix>dependency-jars/</classpathPrefix>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+
+            <!--Add dependencies to classpath-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.5.1</version>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>
+                                ${project.build.directory}/dependency-jars/
+                            </outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
 </code>
 
