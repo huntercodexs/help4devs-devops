@@ -56,6 +56,7 @@ together others plugins, for example the plugin described above to generate an e
                     </execution>
                 </executions>
             </plugin>
+        </plugins>
     </build>
 
 </code>
@@ -233,7 +234,7 @@ specific case is called dependency-jars path.
 
     <build>
 		<plugins>
-			<plugin>
+
             <!--Make Jar executable with dependency class prefix-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -270,6 +271,7 @@ specific case is called dependency-jars path.
                     </execution>
                 </executions>
             </plugin>
+
         </plugins>
     </build>
 
