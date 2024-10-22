@@ -78,6 +78,8 @@
 
 ### GPG Keys
 
+> NOTE: see the [GPG-HELPER.md](GPG-HELPER.md) to get all details about gpg keys
+
 ### MAVEN Settings
 
 - Configure the settings.xml file for Maven
