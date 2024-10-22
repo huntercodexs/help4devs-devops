@@ -2,7 +2,7 @@
 
 ## GPG Keys
 
-- Install the gpg program
+#### Install the gpg program
 
 <code>
 
@@ -24,13 +24,13 @@
 
 </code>
 
-- Generating a Key Pair
+#### Generating a Key Pair
 
 <pre>
 gpg --gen-key
 </pre>
 
-> Example
+###### Example
 
 <code>
 
@@ -69,9 +69,9 @@ gpg --gen-key
 
 </code>
 
-- Listing Keys
+#### Listing Keys
 
-> Example
+###### Example
 
 <code>
 
@@ -99,14 +99,14 @@ and
 use: gpg --list-keys --keyid-format short
 </pre>
 
-> Hint - Multiple Keys
+#### Multiple Keys
+
+> HINT: In case you have multiple keys, the local gpg will use the first listed signature key (gpg --list-signatures)
+> for any publishing steps, if you need to use a specific key you could add the details of the gpg key inside a 
+<configuration> section in your pom.xml and use local settings.xml to discover the passphrase via the signature
+> keyname. You may need to use the signature keyid in hexadecimal format:
 
 <code>
-
-    In case you have multiple keys, the local gpg will use the first listed signature key (gpg --list-signatures) 
-    for any publishing steps, if you need to use a specific key you could add the details of the gpg key inside a 
-    <configuration> section in your pom.xml and use local settings.xml to discover the passphrase via the signature 
-    keyname. You may need to use the signature keyid in hexadecimal format:
     
     $ gpg --list-signatures --keyid-format 0xshort
     /home/mylocaluser/.gnupg/pubring.kbx
@@ -130,7 +130,7 @@ use: gpg --list-keys --keyid-format short
 
 </code>
 
-- Signing a File
+#### Signing a File
 
 <pre>
 gpg -ab myfile.java
@@ -142,21 +142,33 @@ Output should be something like
 myfile.java.asc
 </pre>
 
-- Distributing Your Public Key
+#### Distributing Your Public Key
 
-> Syntax
+> NOTE: If you see the warning message about wrong permissions, for example: gpg:
+> 
+> WARNING: unsafe permissions on homedir '/home/{USER}/.gnupg'
+> 
+> Fix it using the instructions below:
+
+<pre>
+chown -R $(whoami) ~/.gnupg/
+chmod 600 ~/.gnupg/*
+chmod 700 ~/.gnupg
+</pre>
+
+###### Syntax
 
 <pre>
 gpg --keyserver {SERVER} --send-keys {KEY-ID}
 </pre>
 
-> Example
+###### Example
 
 <pre>
 gpg --keyserver keyserver.ubuntu.com --send-keys CA925CD6C9E8D064FF05B4728190C4130ABA0F98
 </pre>
 
-- GPG Key Servers List
+#### GPG Key Servers List
 
 <pre>
 keyserver.ubuntu.com
@@ -164,29 +176,29 @@ keys.openpgp.org
 pgp.mit.edu
 </pre>
 
-- Import the gpg key
+#### Import the gpg key
 
-> Syntax
+###### Syntax
 
 <pre>
 gpg --keyserver {SERVER} --recv-keys {KEY-ID}
 </pre>
 
-> Example
+###### Example
 
 <pre>
 gpg --keyserver keyserver.ubuntu.com --recv-keys CA925CD6C9E8D064FF05B4728190C4130ABA0F98
 </pre>
 
-- Edit the GPG Key
+#### Edit the GPG Key
 
-> Syntax
+###### Syntax
 
 <pre>
 gpg --edit-key {KEY-ID}
 </pre>
 
-> Example - Update Expired Date
+###### Example - Update Expired Date
 
 <code>
 
@@ -226,7 +238,7 @@ gpg --edit-key {KEY-ID}
 
 </code>
 
-- Delete a Sub Key
+#### Delete a Sub Key
 
 Some PGP tools generates sub keys and use them for signing by default, but to make Maven tools recognize the 
 signature, you must use the primary key to sign your artifacts.

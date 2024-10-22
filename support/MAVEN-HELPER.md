@@ -1,6 +1,16 @@
 # MAVEN HELPER
 
-## Deploy one jar file to the Central Maven
+## Deploy one jar file to the Sonatype - Maven Central Repository
+
+### About
+
+This article offer a logical and procedural step by step to achieve the complete flow to deploy one jar file into
+maven central repository. So you can read this entirely file to get enough knowledge about this process and after
+that execute item by item contained in this one.
+
+![sonatype-maven-central-logo.png](midias/images/sonatype-maven-central-logo.png)
+
+> Source: https://central.sonatype.org/register/central-portal/
 
 ### Account
 
@@ -28,57 +38,12 @@
 
 ![sonatype-maven-namespace-verified.png](midias/images/sonatype-maven-namespace-verified.png)
 
-### Requirements
-
-<code>
-
-    <?xml version="1.0" encoding="UTF-8"?>
-    <project xmlns="http://maven.apache.org/POM/4.0.0"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
-        <modelVersion>4.0.0</modelVersion>
-            
-        <packaging>jar</packaging>
-        <groupId>{PACKAGE-DOMAIN}</groupId>
-        <artifactId>{PACKAGE-ID}</artifactId>
-        <version>{PACKAGE-VERSION}</version>
-        
-        <name>{PACKAGE-NAME}</name>
-        <description>{PACKAGE-DESCRIPTION}</description>
-        <url>{PACKAGE-URL:GITHUB-REPOSITORY}</url>
-        
-        <licenses>
-            <license>
-                <name>The Apache Software License, Version 2.0</name>
-                <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-            </license>
-        </licenses>
-        
-        <developers>
-            <developer>
-                <name>{DEVELOPER-NAME}</name>
-                <email>{DEVELOPER-EMAIL}</email>
-                <organization>{DEVELOPER-ORGANIZARION}</organization>
-                <organizationUrl>{DEVELOPER-WEBSITE-URL}</organizationUrl>
-            </developer>
-        </developers>
-        
-        <scm>
-            <connection>{SCM-CONNECTION}</connection>
-            <developerConnection>{SCM-SSH-CONNECTION-URL}</developerConnection>
-            <url>{BRANCH-MASTER-GITHUB-URL}</url>
-        </scm>
-        
-        ...
-    
-    </project>
-
-</code>
-
 ### GPG Keys
 
 > NOTE: see the [GPG-HELPER.md](GPG-HELPER.md) to get all details about gpg keys
+
+All packages that will be sending to the maven central should be assigned using the gpg key published in 
+the gpg server keys.
 
 ### MAVEN Settings
 
@@ -95,8 +60,8 @@
         <servers>
             <server>
                 <id>ossrh</id>
-                <username>{OSSRH-USERNAME}</username>
-                <password>{OSSRH-PASSWORD}</password>
+                <username>{OSSRH-USERNAME-TOKEN}</username>
+                <password>{OSSRH-PASSWORD-TOKEN}</password>
             </server>
         </servers>
             <profiles>
@@ -115,7 +80,7 @@
 
 </code>
 
-### Project POM Configuration
+### Project Requirements and POM Configuration
 
 #### Distribution
 
@@ -131,6 +96,24 @@
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
     </distributionManagement>
+
+</code>
+
+#### Publishing 
+
+###### Using Maven Plugin
+
+<code>
+
+    <plugin>
+        <groupId>org.sonatype.central</groupId>
+        <artifactId>central-publishing-maven-plugin</artifactId>
+        <version>0.6.0</version>
+        <extensions>true</extensions>
+        <configuration>
+            <publishingServerId>central</publishingServerId>
+        </configuration>
+    </plugin>
 
 </code>
 
@@ -212,6 +195,105 @@
             </execution>
         </executions>
     </plugin>
+
+</code>
+
+In case there is a multiple keys use the configuration below in the POM:
+
+<code>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.5</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                        <configuration>
+                            <keyname>${gpg.keyname}</keyname>
+                            <passphraseServerId>${gpg.keyname}</passphraseServerId>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</code>
+
+> WARNING: For gpg versions later 2.1 can be necessary to fix problems with getting passphrase, so use the 
+> configuration below to fix it.
+
+<code>
+
+    <configuration>
+        <keyname>${gpg.keyname}</keyname>
+        <passphraseServerId>${gpg.keyname}</passphraseServerId>
+        <gpgArguments>
+            <arg>--pinentry-mode</arg>
+            <arg>loopback</arg>
+        </gpgArguments>
+    </configuration>
+
+</code>
+
+### Full example POM
+
+<code>
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <project xmlns="http://maven.apache.org/POM/4.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+        <modelVersion>4.0.0</modelVersion>
+            
+        <packaging>jar</packaging>
+        <groupId>{PACKAGE-DOMAIN}</groupId>
+        <artifactId>{PACKAGE-ID}</artifactId>
+        <version>{PACKAGE-VERSION}</version>
+        
+        <name>{PACKAGE-NAME}</name>
+        <description>{PACKAGE-DESCRIPTION}</description>
+        <url>{PACKAGE-URL:GITHUB-REPOSITORY}</url>
+        
+        <licenses>
+            <license>
+                <name>The Apache Software License, Version 2.0</name>
+                <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            </license>
+        </licenses>
+        <licenses>
+            <license>
+                <name>MIT License</name>
+                <url>http://www.opensource.org/licenses/mit-license.php</url>
+            </license>
+        </licenses>
+        
+        <developers>
+            <developer>
+                <name>{DEVELOPER-NAME}</name>
+                <email>{DEVELOPER-EMAIL}</email>
+                <organization>{DEVELOPER-ORGANIZARION}</organization>
+                <organizationUrl>{DEVELOPER-WEBSITE-URL}</organizationUrl>
+            </developer>
+        </developers>
+        
+        <scm>
+            <connection>scm:git:git://github.com/{GITHUB-USER}/{GITHUB-REPOSITORY}</connection>
+            <developerConnection>scm:git:ssh://github.com:{GITHUB-USER}/{GITHUB-REPOSITORY}</developerConnection>
+            <url>http://github.com/{BRANCH-MASTER-GITHUB-URL}</url>
+        </scm>
+        
+        ...
+    
+    </project>
 
 </code>
 
