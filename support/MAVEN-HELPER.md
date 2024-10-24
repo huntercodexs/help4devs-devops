@@ -335,7 +335,7 @@ Use the following rules and more to get everything ok
 
 - Java Doc Revision
   - The auto closed elements is not allowed, for example: <br />
-  - The element title should respect the hierarchy, for example: <h1><h2><h3></h3></h2><h1>
+  - The element title should respect the hierarchy, for example: h1, h2, h3, h4, h5, h6
   - Use @throwns label when the method use the throwns in the signature method
   - Inform all @params that are been used by the method
   - Replace the tags <> per &lt; and &gt; respective
@@ -519,6 +519,23 @@ operations according example below:
 
 > IMPORTANT: After deploy is conclude goto the dashboard in your maven central account seek for the component that 
 > was just deployed and click on Publish button, this step can take a few minutes or hours.
+
+- Check the status of Deployments
+
+![sonatype-maven-central-repository-deployments.png](midias/images/sonatype-maven-central-repository-deployments.png)
+
+As you can see in the above image there is two deployments, one VALIDATE and other PUBLISHED, the VALIDATE deployment 
+is ready to Publish, so you just need to choose this deployment and follow clicking on Publish button according to the 
+below illustration.
+
+![sonatype-maven-central-repository-publishing.png](midias/images/sonatype-maven-central-repository-publishing.png)
+
+The status of deployment will be changed for PUBLISHING, and you can track that status pressing F5 from the keyboard 
+to see what is the current one
+
+![sonatype-maven-central-repository-status.png](midias/images/sonatype-maven-central-repository-status.png)
+
+When the status of deployment is PUBLISHED, so everything is done and ready to use.
 
 ### Import the dependency
 
