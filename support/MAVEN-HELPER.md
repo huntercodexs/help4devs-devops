@@ -770,9 +770,6 @@ The links below are just for reference of the content that was exposed in this a
 - https://identity.sonatype.com/u/login?state=hKFo2SBxZW5RLTRKNmx5NGRGN1BlQUloejkwZldZY1FlVHVZU6Fur3VuaXZlcnNhbC1sb2dpbqN0aWTZIGJNS3AwTmlKTWY1R2h1bWF2ZDNzZjZYdGUzdjVpLU4wo2NpZNkgSDZPZUhIRFBBRHd2R3lZNW9ONk9oODJ0UE8wdHFic1Q
 - https://docs.stakater.com/saap/managed-addons/nexus/how-to-guide/how-to-configure-maven-with-nexus.html#
 
-
-
-
 # Maven Plugins
 
 ### Generate executable JAR file
