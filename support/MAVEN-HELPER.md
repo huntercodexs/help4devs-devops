@@ -1186,3 +1186,176 @@ Use when you receive the follow error: Invalid signature file digest for Manifes
     </plugin>
 
 </code>
+
+# Maven Samples for settings.xml
+
+- Local
+
+<code>
+
+    <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+        http://maven.apache.org/xsd/settings-1.0.0.xsd">
+        
+            <servers>
+                <server>
+                    <id>nexus</id>
+                    <username>{USER}</username>
+                    <password>{PASSWORD}</password>
+                </server>
+            </servers>
+
+            <mirrors>
+                <mirror>
+                    <id>nexus</id>
+                    <name>central</name>
+                    <url>http://{SERVER_IP}:{SERVER_PORT}/repository/maven-group</url>
+                    <mirrorOf>*</mirrorOf>
+                </mirror>
+            </mirrors>
+
+            <repositories>
+
+                <repository>
+                    <id>spring-milestones</id>
+                    <name>Spring Milestones</name>
+                    <url>https://repo.spring.io/milestone</url>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </repository>
+
+                <repository>
+                    <id>spring-snapshots</id>
+                    <name>Spring Snapshots</name>
+                    <url>https://repo.spring.io/snapshot</url>
+                    <releases>
+                        <enabled>false</enabled>
+                    </releases>
+                </repository>
+
+                <repository>
+                    <id>maven_central</id>
+                    <url>https://repo1.maven.org/maven2/</url>
+                </repository>
+
+                <repository>
+                    <id>nexus</id>
+                    <url>http://{SERVER_IP}:{SERVER_PORT}/repository/maven-group/</url>
+                </repository>
+
+            </repositories>
+        </settings>
+
+</code>
+
+- GitHub Packages
+
+<code>
+
+    <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+        http://maven.apache.org/xsd/settings-1.0.0.xsd">
+    
+        <servers>
+            <server>
+            <id>github</id>
+            <username>{GITHUB_USERNAME}</username>
+            <password>{GITHUB_PEROSNAL_TOKEN}</password>
+            </server>
+        </servers>
+    
+        <profiles>
+            <profile>
+            <id>maven2</id>
+                <repositories>
+    
+                    <repository>
+                        <id>central</id>
+                        <url>https://repo1.maven.org/maven2</url>
+                        <snapshots>
+                            <enabled>true</enabled>
+                        </snapshots>
+                    </repository>
+    
+                </repositories>
+            </profile>
+    
+            <profile>
+                <id>maven-github1</id>
+                <repositories>
+    
+                    <repository>
+                        <id>github</id>
+                        <url>https://maven.pkg.github.com/{GITHUB_USERNAME}/{GITHUB_REPO}</url>
+                        <snapshots>
+                            <enabled>true</enabled>
+                        </snapshots>
+                    </repository>
+    
+                </repositories>
+            </profile>
+    
+            <profile>
+                <id>maven-github2</id>
+                <repositories>
+    
+                    <repository>
+                        <id>github</id>
+                        <url>https://maven.pkg.github.com/{GITHUB_USERNAME}/{GITHUB_REPO}</url>
+                        <snapshots>
+                            <enabled>true</enabled>
+                        </snapshots>
+                    </repository>
+    
+                </repositories>
+            </profile>
+        </profiles>
+    
+        <activeProfiles>
+            <activeProfile>maven2</activeProfile>
+            <activeProfile>maven-github1</activeProfile>
+            <activeProfile>maven-github2</activeProfile>
+        </activeProfiles>
+    </settings>
+
+</code>
+
+- Maven Central Repository
+
+<code>
+
+    <settings>
+        <servers>
+            <server>
+              <id>central</id>
+              <username>{SONATYPE_CENTRAL_USER}</username>
+              <password>{SONATYPE_CENTRAL_TOKEN}</password>
+            </server>
+        </servers>
+        <profiles>
+            <profile>
+                <activation>
+                    <activeByDefault>true</activeByDefault>
+                </activation>
+                <properties>
+                    <gpg.executable>gpg</gpg.executable>
+                    <gpg.keyname>{GPG_SHORT_ID}</gpg.keyname>
+                    <gpg.passphrase>{GPG_PASSPHRASE}</gpg.passphrase>
+                </properties>
+            </profile>
+        </profiles>
+    </settings>
+
+</code>
+
+- Nexus Manger Repository ![unavailable.png](midias/images/unavailable.png)
+
+<code>
+
+    ....
+
+</code>
+
