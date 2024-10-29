@@ -1288,7 +1288,7 @@ Use when you receive the follow error: Invalid signature file digest for Manifes
                 <repositories>
     
                     <repository>
-                        <id>github</id>
+                        <id>repo1</id>
                         <url>https://maven.pkg.github.com/{GITHUB_USERNAME}/{GITHUB_REPO}</url>
                         <snapshots>
                             <enabled>true</enabled>
@@ -1303,7 +1303,7 @@ Use when you receive the follow error: Invalid signature file digest for Manifes
                 <repositories>
     
                     <repository>
-                        <id>github</id>
+                        <id>repo2</id>
                         <url>https://maven.pkg.github.com/{GITHUB_USERNAME}/{GITHUB_REPO}</url>
                         <snapshots>
                             <enabled>true</enabled>
