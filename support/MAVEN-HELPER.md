@@ -1262,6 +1262,69 @@ Use when you receive the follow error: Invalid signature file digest for Manifes
         <servers>
             <server>
             <id>github</id>
+            <username>{GITHUB_USER}</username>
+            <password>{GITHUB_ACCESS_TOKEN}</password>
+            </server>
+        </servers>
+    
+        <profiles>
+            <profile>
+            <id>github</id>
+            <repositories>
+    
+                <repository>
+                    <id>central</id>
+                    <url>https://repo1.maven.org/maven2</url>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                </repository>
+    
+                <repository>
+                    <id>repo1</id>
+                    <url>https://maven.pkg.github.com/huntercodexs/repo1</url>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                </repository>
+    
+                <repository>
+                    <id>repo2</id>
+                    <url>https://maven.pkg.github.com/huntercodexs/repo2</url>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                </repository>
+    
+                <repository>
+                    <id>repo3</id>
+                    <url>https://maven.pkg.github.com/huntercodexs/repo3</url>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                </repository>
+    
+            </repositories>
+            </profile>
+        </profiles>
+    
+        <activeProfiles>
+            <activeProfile>github</activeProfile>
+        </activeProfiles>
+    </settings>
+
+</code>
+
+<code>
+
+    <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+        http://maven.apache.org/xsd/settings-1.0.0.xsd">
+    
+        <servers>
+            <server>
+            <id>github</id>
             <username>{GITHUB_USERNAME}</username>
             <password>{GITHUB_PEROSNAL_TOKEN}</password>
             </server>
