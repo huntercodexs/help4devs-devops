@@ -40,6 +40,7 @@ A simple instructions to help developers in overall cases to make configurations
 - <a href="#DYNAMODB">DYNAMODB</a>
 - <a href="#API-GATEWAY">API-GATEWAY</a>
 - <a href="#LAMBDA-FUNCTIONS">LAMBDA FUNCTIONS</a>
+- <a href="#STEP-FUNCTIONS">STEP FUNCTIONS</a>
 - <a href="#CLOUD-WATCH">CLOUD WATCH</a>
 - <a href="#LOAD-BALANCER">LOAD BALANCER</a>
 - <a href="#ACM">ACM</a>
@@ -49,6 +50,7 @@ A simple instructions to help developers in overall cases to make configurations
 - <a href="#COSTS-ESTIMATES">COSTS ESTIMATES</a>
 - <a href="#AWS-NETWORKING">AWS NETWORKING</a>
 - <a href="#S3-ROUTE53-ACM-CLOUD-FRONT">S3 ROUTE53 ACM CLOUD FRONT</a>
+- <a href="#API-GATEWAY-AND-LAMBDA">API GATEWAY AND LAMBDA</a>
 - <a href="#LOCALSTACK">LOCALSTACK</a>
 
 <br /><br />
@@ -1186,11 +1188,6 @@ Message group ID: payment
 <br /><br />
 <a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
 
-## API-GATEWAY
-
-<br /><br />
-<a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
-
 ## LAMBDA FUNCTIONS
 
 #### PYTHON 
@@ -1259,6 +1256,27 @@ and should be like something below
 ![aws-lambda-sample-python-logs-detail.png](midias/images/aws-lambda-sample-python-logs-detail.png)
 
 It is possible to see in the above image the message produced by the current lambda function testing here
+
+- Example Lambda Function in Python
+
+<pre>
+import http.client
+import json
+
+def lambda_handler(event, context):
+    
+
+    code = event['postalcode'];
+    conn = http.client.HTTPSConnection('viacep.com.br')
+    headers = {'Content-type': 'application/json'}
+
+
+    conn.request('GET', '/ws/'+code+'/json/', 'null', headers)
+    response = json.loads(conn.getresponse().read().decode())
+
+
+    return response
+</pre>
 
 #### JAVA
 
@@ -1354,6 +1372,16 @@ RESPONSE
   "result": true
 }
 </pre>
+
+<br /><br />
+<a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
+
+## API-GATEWAY
+
+<br /><br />
+<a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
+
+## STEP FUNCTIONS
 
 <br /><br />
 <a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
@@ -1700,6 +1728,182 @@ Now you can access the static website using HTTPS and one friendly URL, for exam
 
 <br /><br />
 <a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
+
+## API-GATEWAY-AND-LAMBDA
+
+<br /><br />
+<a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
+
+#### LAMBDA FUNCTION CREATE
+
+To create a lambda function, follow the instructions below, in this example we will use python as a 
+programming language.
+
+- Goto the dashboard Lambda and click on Create function button
+ 
+![aws-api-gateway-and-lambda-1.png](midias/images/aws-api-gateway-and-lambda/aws-api-gateway-and-lambda-1.png)
+
+- Fill the form Create function according something like below
+
+![aws-api-gateway-and-lambda-1.png](midias/images/aws-api-gateway-and-lambda/aws-api-gateway-and-lambda-2.png)
+
+After fill the form to create a function, click on Create function button. The result should be like the illustration
+below, can have some differences in your case of course.
+
+![aws-api-gateway-and-lambda-1.png](midias/images/aws-api-gateway-and-lambda/aws-api-gateway-and-lambda-3.png)
+
+Now goto the Code source tab and put the following code inside the code editor
+
+<pre>
+import http.client
+import json
+
+def lambda_handler(event, context):
+    
+
+    code = event['postalcode'];
+    conn = http.client.HTTPSConnection('viacep.com.br')
+    headers = {'Content-type': 'application/json'}
+
+
+    conn.request('GET', '/ws/'+code+'/json/', 'null', headers)
+    response = json.loads(conn.getresponse().read().decode())
+
+
+    return response
+</pre>
+
+The result should be something like that
+
+![aws-api-gateway-and-lambda-1.png](midias/images/aws-api-gateway-and-lambda/aws-api-gateway-and-lambda-4.png)
+
+After put the code in the code editor, click on the Deploy button to apply all changes in the current lambda function.
+You can make a test to guarantee that everything is ok, for that just click on the Test tab above the code editor, 
+fill the form and click on Test button, the result should be something like below:
+
+![aws-api-gateway-and-lambda-1.png](midias/images/aws-api-gateway-and-lambda/aws-api-gateway-and-lambda-5.png)
+
+![aws-api-gateway-and-lambda-1.png](midias/images/aws-api-gateway-and-lambda/aws-api-gateway-and-lambda-6.png)
+
+In this point everything is ok with the lambda function and ready to run.
+
+#### API GATEWAY CREATE
+
+##### Using HTTP Method GET
+
+- Goto API GATEWAY Dashboard and choose Build from REST API option, according image below:
+
+![aws-api-gateway-and-lambda-7.png](midias/images/aws-api-gateway-and-lambda/aws-api-gateway-and-lambda-7.png)
+
+- Fill the Create REST API form
+
+![aws-api-gateway-and-lambda-8.png](midias/images/aws-api-gateway-and-lambda/aws-api-gateway-and-lambda-8.png)
+
+At this moment you will be redirected to the Api Gateway (Resources) dashboard, where you will see some options 
+according the illustration below:
+
+![aws-api-gateway-and-lambda-9.png](midias/images/aws-api-gateway-and-lambda/aws-api-gateway-and-lambda-9.png)
+
+Now we will create the resources and HTTP Methods to serve our API by these endpoints, so for that make the following 
+operations inside the Resources panel.
+
+- Click on Create resource button in the Resources panel
+- Let Proxy resource check deactivated
+- In the Resource path field let "/"
+- In the Resource name give the name: postalcode
+- Check the CORS options (to prevent unexpected behaviour to the request /{code}/, /{code})
+- Click on Create resource button
+
+The image below shows how to do it
+
+![aws-api-gateway-and-lambda-10.png](midias/images/aws-api-gateway-and-lambda/aws-api-gateway-and-lambda-10.png)
+
+You will be redirected to the Resources panel automatically and probably will see something like below in the panel
+
+![aws-api-gateway-and-lambda-10.png](midias/images/aws-api-gateway-and-lambda/aws-api-gateway-and-lambda-11.png)
+
+Realize that there is the resource /postalcode created and below of that another field named OPTIONS, that offers 
+a control in the headers of requests, given a way to configure the Authorization and things related to the headers. 
+
+To go further, select the resource /postalcode and click on Create method button on the right side of the dashboard.
+
+- Choose GET for the Method type
+- Choose Lambda function for the Integration type
+- Choose the region and the Lambda function previously created named postalcode_sample_lambda_function_py
+- Click on Create method button
+
+These steps are illustrated in the image below
+
+![aws-api-gateway-and-lambda-10.png](midias/images/aws-api-gateway-and-lambda/aws-api-gateway-and-lambda-12.png)
+
+At this moment you probably will be able to see the dashboard configured according something like below
+
+![aws-api-gateway-and-lambda-13.png](midias/images/aws-api-gateway-and-lambda/aws-api-gateway-and-lambda-13.png)
+
+Finally, it is pretty important to make one last thing, create the models mapping, and for that you should select 
+the resource GET, click on the "Integration request", and then click on "Edit" button. One new form will e open 
+called "Edit integration request", so in that form scroll down until "Mapping templates" and click on 
+"Add mapping template" to write the following information:
+
+- In the Content type put the "application/json" text
+- And finally, and the most important write in the "Template body" the following text:
+
+<pre>
+{
+   "postalcode": "$input.params('code')"
+}
+</pre>
+
+Where, "postalcode" is the field that the Lambda is expecting to receive, and the 'code' is the resource in the path 
+request, for example: /api/v1/postalcode/1234567890.
+
+Now everything is done, you can make some test using your preferred requester program, for example: 
+postman, insominia, bruno e etc.
+
+Lookup for the "Deploy API" button and click on it, you will be asked about state information, select "New stage" and 
+fill some name, for example: postalcode-stage-test and click on Create.
+
+The API Gateway Stages serve the all api resources that were configured before throughout the API endpoints, you can 
+find the current endpoint that was created in this tutorial clicking on GET resoruce and lookup for 
+"URL Invoke", for example: https://r5kn0s2sq8.execute-api.us-east-1.amazonaws.com/postalcode-stage-test/postalcode/{code}.
+
+Look the image below:
+
+![aws-api-gateway-and-lambda-14.png](midias/images/aws-api-gateway-and-lambda/aws-api-gateway-and-lambda-14.png)
+
+Using the Postman to make tests you can easily get the expected result, for example:
+
+![aws-api-gateway-and-lambda-15.png](midias/images/aws-api-gateway-and-lambda/aws-api-gateway-and-lambda-15.png)
+
+> Request
+
+<pre>
+GET https://r5kn0s2sq8.execute-api.us-east-1.amazonaws.com/postalcode-stage-test/postalcode/12090002
+</pre>
+
+> Response
+
+<pre>
+{
+    "cep": "12070-180",
+    "logradouro": "Rua Emilio Zaluar",
+    "complemento": "",
+    "unidade": "",
+    "bairro": "Vila São Carlos",
+    "localidade": "Taubaté",
+    "uf": "SP",
+    "estado": "São Paulo",
+    "regiao": "Sudeste",
+    "ibge": "3554102",
+    "gia": "6889",
+    "ddd": "12",
+    "siafi": "7183"
+}
+</pre>
+
+> NOTE: In this example we are not using any king of Authorization, but keep in your mind that it is very important.
+
+##### Using HTTP Method POST
 
 ## AWS NETWORKING
 
