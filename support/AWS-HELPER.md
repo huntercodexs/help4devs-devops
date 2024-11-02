@@ -1905,6 +1905,9 @@ GET https://r5kn0s2sq8.execute-api.us-east-1.amazonaws.com/postalcode-stage-test
 
 ##### Using HTTP Method POST
 
+<br /><br />
+<a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
+
 ## AWS NETWORKING
 
 In this topic we can see one small concept project to view how to work an environment based on AWS Cloud services.
