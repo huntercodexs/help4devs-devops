@@ -299,7 +299,7 @@ ClientAliveCountMax	3
 ###### Destroy EC2 Instance
 
 > NOTE: It's pretty important to terminate the instance to avoid charges and bills surprised,
-so for that follow the steps below
+> so for that follow the steps below
 
 - Go to your EC2 instance
 - Choose 'Instance State'
@@ -1905,8 +1905,184 @@ GET https://r5kn0s2sq8.execute-api.us-east-1.amazonaws.com/postalcode-stage-test
 
 ##### Using HTTP Method POST
 
-<br /><br />
-<a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
+> NOTE: It is important to clarify that this simple tutorial doesn't cover the Roles and Policies flows, because 
+> both of them are made automatically by AWS SERVICES, however, if you want to get more details over that goto the 
+> AWS Official website and get more details about it<br>
+> https://docs.aws.amazon.com/pt_br/apigateway/latest/developerguide/integrating-api-with-aws-services-lambda.html
+
+- Goto the Lambda dashboard and click on "Create Function" button
+- Choose "Author from scratch"
+- Give a name for the function called "calculator"
+- Choose the "Python 3.8" for Runtime field
+- Click on Create "function"
+
+Now the Lambda function is ready to configuration, so go further in the process on create a function clicking in  the 
+Code Tab from Lambda Function and put the code below in the editor
+
+<pre>
+import json
+
+
+def lambda_handler(event, context):
+    print(event)
+
+    try:
+        (event['a']) and (event['b']) and (event['op'])
+    except KeyError:
+        return '400 Invalid Input'
+
+    try:
+        res = {
+            "a": float(event['a']), 
+            "b": float(event['b']), 
+            "op": event['op']
+        }
+    except ValueError:
+        return '400 Invalid Operand'
+
+    if event['op'] == '+':
+        res['c'] = res['a'] + res['b']
+    elif event['op'] == '-':
+        res['c'] = res['a'] - res['b']
+    elif event['op'] == '*':
+        res['c'] = res['a'] * res['b']
+    elif event['op'] == '/':
+        if res['b'] == 0:
+            return '400 Divide by Zero'
+        else:
+            res['c'] = res['a'] / res['b']
+    else:
+        return '400 Invalid Operator'
+
+    return res
+
+</pre>
+
+- Click on "Deploy" to apply the lambda function code in the state process
+- If you desire, it is possible to make some tests using the "Test" tab to guarantee that everything is ok
+- Now the lambda function is ready to run or called by API GATEWAY
+
+So for now, let us set up the API GATEWAY to use this lambda function that was just created to work integrated with 
+that one.
+
+- Goto the API GATEWAY dashboard
+- Lookup for "REST API" section and click on "Build" button
+- In the "API details" select "New API"
+- Give one name for the API in the "API name" file, for example: calculator_api_test
+- In the "API endpoint type" select "Regional"
+
+The final configuration should be something like below
+
+![aws-api-gateway-and-lambda-16.png](midias/images/aws-api-gateway-and-lambda/aws-api-gateway-and-lambda-16.png)
+
+- Create one resource called: calc
+  - Select the CORS to enable OPTIONS Header Request
+- Select the calc resource and lookup for "Create method" button
+- Select POST for Method type
+- Choose Lambda function for "Integration type"
+- Select the region in the "Lambda function" configuration
+- Seek the lambda function in the field, for example: arn:aws:lambda:us-east-1:{account-id}:function:calculator
+- Click on "Create method"
+
+Now, goto the main menu on the left side of screen and lookup for "Models", click on it
+
+> input
+
+- Click on "Create model"
+  - Give the name: input
+  - Content type: application/json
+  - Model schema:
+<pre>
+{
+    "type":"object",
+    "properties":{
+        "a":{"type":"number"},
+        "b":{"type":"number"},
+        "op":{"type":"string"}
+    },
+    "title":"input"
+}
+</pre>
+- Click on "Create" button
+
+> output
+
+- Click on "Create model" again
+  - Give the name: output
+  - Content type: application/json
+  - Model schema:
+<pre>
+{
+    "type":"object",
+    "properties":{
+        "c":{"type":"number"}
+    },
+    "title":"output"
+}
+</pre>
+- Click on "Create" button
+
+> result
+
+- Click on "Create model" again
+  - Give the name: result
+  - Content type: application/json
+  - Model schema:
+<pre>
+{
+    "type":"object",
+    "properties":{
+        "input":{
+            "$ref":"https://apigateway.amazonaws.com/restapis/{api-gateway-id}/models/input"
+        },
+        "output":{
+            "$ref":"https://apigateway.amazonaws.com/restapis/{api-gateway-id}/models/output"
+        }
+    },
+    "title":"result"
+}
+</pre>
+- Click on "Create" button
+
+After all, goto "Resources" item from the main menu on the left side of screen and click on it
+
+- Select the POST method in the resources section
+- Click on "Method request" and so click on "Edit" button
+- In the field "Request validator" set "Validate body"
+- Goto "Request body" in the same form and click on "Add model"
+- Fill the form like this:
+  - Content type: application/json
+  - Model: input (this is the input that you had created before in the Models main menu)
+- Finally, click on Create
+
+So now, in the API GATEWAY main menu click on APIs and select the current API that you are creating and click on 
+"calculator_api_test" to get the dashboard controls. Lookup for the button "Deploy API" and click on it to deploy the
+api in the specific stage and activate the use. You will be asked for the Stage name and others information, just 
+inform these one and click on "Deploy". Since now, you can make tests from the internet, using some application, for
+example: Postman, below is one sample use for this API resource.
+
+> Request
+
+<pre>
+POST https://onye7f9qo0.execute-api.us-east-1.amazonaws.com/calculator_stage_test/calc
+{
+  "a": 1,
+  "b": 2,
+  "op": "+",
+  "c": 3
+}
+</pre>
+
+> Response
+
+<pre>
+{
+    "a": 1.0,
+    "b": 2.0,
+    "op": "+",
+    "c": 3.0
+}
+</pre>
 
 ## AWS NETWORKING
 
