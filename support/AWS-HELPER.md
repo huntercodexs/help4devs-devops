@@ -52,7 +52,10 @@ A simple instructions to help developers in overall cases to make configurations
 - <a href="#S3-ROUTE53-ACM-CLOUD-FRONT">S3 ROUTE53 ACM CLOUD FRONT</a>
 - <a href="#API-GATEWAY-AND-LAMBDA">API GATEWAY AND LAMBDA</a>
 - <a href="#AWS-LAMBDA-AND-STEP-FUNCTION-THEN-AWS-LAMBDA">AWS LAMBDA AND STEP FUNCTION THEN AWS LAMBDA</a>
+- <a href="#AWS-STEP-FUNCTION-AND-AWS-API-GATEWAY">AWS STEP FUNCTION AND AWS API GATEWAY</a>
 - <a href="#LOCALSTACK">LOCALSTACK</a>
+
+[//]: # (------------------------------------------------------------------------------------------------------------)
 
 <br /><br />
 <a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
@@ -80,6 +83,8 @@ A simple instructions to help developers in overall cases to make configurations
 
 Now you will probably visualize the Users list with the last one that was created in this step by step.
 So make a logout from the current account and try login using the new user that was created in the steps ago.
+
+[//]: # (------------------------------------------------------------------------------------------------------------)
 
 <br /><br />
 <a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
@@ -121,6 +126,8 @@ Now go to cloud watching and make the configurations as showed below
 
 > IMPORTANT: Check your email address to Confirm "SNS - Simple Notification Service" and active this resource
 
+[//]: # (------------------------------------------------------------------------------------------------------------)
+
 <br /><br />
 <a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
 
@@ -130,6 +137,8 @@ Now go to cloud watching and make the configurations as showed below
 
 It is pretty simple and doesn't need more details, just click in the Cloud Shell resource and begin the
 administration using a terminal in the browser.
+
+[//]: # (------------------------------------------------------------------------------------------------------------)
 
 <br /><br />
 <a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
@@ -219,6 +228,8 @@ To get more details see the https://docs.aws.amazon.com/cli/latest/userguide/cli
 ###### ACM
 ###### ACL
 
+[//]: # (------------------------------------------------------------------------------------------------------------)
+
 <br /><br />
 <a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
 
@@ -307,6 +318,8 @@ ClientAliveCountMax	3
 - Select 'Terminate Instance'
 - Check the Instance state: Terminated
 
+[//]: # (------------------------------------------------------------------------------------------------------------)
+
 <br /><br />
 <a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
 
@@ -350,6 +363,8 @@ features, it can save a lot of time when you need to put the new services or mac
 
 - Click on Execute Instance button
 - Check if the instance was generated in the EC2 Instances Dashboard
+
+[//]: # (------------------------------------------------------------------------------------------------------------)
 
 <br /><br />
 <a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
@@ -661,6 +676,8 @@ Routing policy: Simple routing
 
 ![aws-route53-hosted-zone-sample.png](midias/images/aws-route53-hosted-zone-sample.png)
 
+[//]: # (------------------------------------------------------------------------------------------------------------)
+
 <br /><br />
 <a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
 
@@ -793,6 +810,8 @@ Routing policy: Simple routing
 
 > NOTE: You may need to wait a few moments for the redirection and feature activation to take effect.
 
+[//]: # (------------------------------------------------------------------------------------------------------------)
+
 <br /><br />
 <a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
 
@@ -895,6 +914,8 @@ Routing policy: Simple routing
 - Testing your cloud front application access via HTTP/HTTPS, for example:
   - http://help4devs.com (should be redirected to HTTPS automatically)
   - https://help4devs.com
+
+[//]: # (------------------------------------------------------------------------------------------------------------)
 
 <br /><br />
 <a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
@@ -1166,25 +1187,35 @@ Message group ID: payment
 ...
 
 
+[//]: # (------------------------------------------------------------------------------------------------------------)
+
 <br /><br />
 <a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
 
 ## ECS
+
+[//]: # (------------------------------------------------------------------------------------------------------------)
 
 <br /><br />
 <a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
 
 ## EKS
 
+[//]: # (------------------------------------------------------------------------------------------------------------)
+
 <br /><br />
 <a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
 
 ## RDS
 
+[//]: # (------------------------------------------------------------------------------------------------------------)
+
 <br /><br />
 <a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
 
 ## DYNAMODB
+
+[//]: # (------------------------------------------------------------------------------------------------------------)
 
 <br /><br />
 <a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
@@ -1374,15 +1405,21 @@ RESPONSE
 }
 </pre>
 
+[//]: # (------------------------------------------------------------------------------------------------------------)
+
 <br /><br />
 <a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
 
 ## API-GATEWAY
 
+[//]: # (------------------------------------------------------------------------------------------------------------)
+
 <br /><br />
 <a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
 
 ## STEP FUNCTIONS
+
+[//]: # (------------------------------------------------------------------------------------------------------------)
 
 <br /><br />
 <a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
@@ -1401,35 +1438,49 @@ others things relate to that. Below is the short explanations about the resource
 #### Networking monitoring
 #### Insights
 
+[//]: # (------------------------------------------------------------------------------------------------------------)
+
 <br /><br />
 <a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
 
 ## LOAD BALANCER
+
+[//]: # (------------------------------------------------------------------------------------------------------------)
 
 <br /><br />
 <a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
 
 ## ACM
 
+[//]: # (------------------------------------------------------------------------------------------------------------)
+
 <br /><br />
 <a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
 
 ## VPC
+
+[//]: # (------------------------------------------------------------------------------------------------------------)
 
 <br /><br />
 <a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
 
 ## ACL
 
+[//]: # (------------------------------------------------------------------------------------------------------------)
+
 <br /><br />
 <a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
 
 ## SECURITY GROUP
 
+[//]: # (------------------------------------------------------------------------------------------------------------)
+
 <br /><br />
 <a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
 
 ## COSTS ESTIMATES
+
+[//]: # (------------------------------------------------------------------------------------------------------------)
 
 <br /><br />
 <a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
@@ -1726,6 +1777,8 @@ our CloudFront distribution, and this was made according the steps below
 - Just click on Create records button to finish everything
 
 Now you can access the static website using HTTPS and one friendly URL, for example: https://help4devs.com
+
+[//]: # (------------------------------------------------------------------------------------------------------------)
 
 <br /><br />
 <a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
@@ -2082,6 +2135,8 @@ POST https://onye7f9qo0.execute-api.us-east-1.amazonaws.com/calculator_stage_tes
 }
 </pre>
 
+[//]: # (------------------------------------------------------------------------------------------------------------)
+
 <br /><br />
 <a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
 
@@ -2325,6 +2380,252 @@ can check the processing and executing seem the "Executions" section in the Step
 
 ![aws-lambda-and-step-function-then-aws-lambda-4.png](midias/images/aws-lambda-and-step-function-then-aws-lambda/aws-lambda-and-step-function-then-aws-lambda-4.png)
 
+[//]: # (------------------------------------------------------------------------------------------------------------)
+
+<br /><br />
+<a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
+
+## AWS STEP FUNCTION AND AWS API GATEWAY
+
+In this topic we will talk about Step Functions integration with Api Gateway, so for that we will explain the topics:
+
+- Roles
+- Api Gateway
+- Step Function
+
+#### Creating the roles
+
+![aws-step-function-and-api-gateway-1.png](midias/images/aws-step-function-and-api-gateway/aws-step-function-and-api-gateway-1.png)
+
+- Goto the IAM dashboard and lookup for Roles
+- Click on "Create role"
+- Fill the form "Select trusted entity" with the following data
+  - Trusted entity type: AWS Service
+  - Use case: API Gateway
+- Click on Next button
+- You will see the Policy attached automatically: AmazonAPIGatewayPushToCloudWatchLogs
+- Click on Next button
+- Type the "Role name": api_gateway_role_for_step_function
+- Click on "Create role"
+- Choose "Create role" again
+- Fill the form "Select trusted entity" with the following data
+  - Trusted entity type: AWS Service
+  - Use case: Step Functions
+- Click on Next button
+- You will see the Policy attached automatically: AWSLambdaRole
+- Click on Next button
+- Type the "Role name": step_function_role_for_api_gateway
+- Click on "Create role"
+
+Now check the Trust Relationships for: api_gateway_role_for_step_function and step_function_role_for_api_gateway
+
+<pre>
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "states.amazonaws.com"
+            },
+            "Action": "sts:AssumeRole"
+        }
+    ]
+}
+</pre>
+
+Also, check the permissions policies for: api_gateway_role_for_step_function
+
+<pre>
+AmazonAPIGatewayPushToCloudWatchLogs {
+    {
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Effect": "Allow",
+                "Action": [
+                    "logs:CreateLogGroup",
+                    "logs:CreateLogStream",
+                    "logs:DescribeLogGroups",
+                    "logs:DescribeLogStreams",
+                    "logs:PutLogEvents",
+                    "logs:GetLogEvents",
+                    "logs:FilterLogEvents"
+                ],
+                "Resource": "*"
+            }
+        ]
+    }
+}
+</pre>
+
+and check the permissions policies for the role step_function_role_for_api_gateway as well
+
+<pre>
+AWSLambdaRole {
+    {
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Effect": "Allow",
+                "Action": [
+                    "lambda:InvokeFunction"
+                ],
+                "Resource": [
+                    "*"
+                ]
+            }
+        ]
+    }
+}
+</pre>
+
+#### Creating the API Gateway
+
+- Goto the API Gateway dashboard and choose REST API clicking on Build button
+- In the API details select "New API"
+- In the API name type: postalcode_api_test
+- In the API endpoint type select Regional
+- Click on "Create API" button
+- Lookup for Resources section and click on "Create resource" button
+- Type "postalcode" in the "Resource name" field and let the CORS deactivated
+- Now select the "postalcode" resource and click on "Create resource" again
+- Type "{code}" in the Resource name and mark the CORS checkbox (it will be created the HTTP Method OPTIONS)
+- Select the "{code}" resource just created and click on "Create method" button (on the right side on the page)
+- In the "Create method" form, do the following instructions:
+  - Method type: GET
+  - Integration type: HTTP
+  - HTTP Method: GET (this will be used to call the external service)
+  - Endpoint URL: https://viacep.com.br/ws/{code}/json
+- Click on "Create method"
+- Now in the Resources section, select the GET Method just created
+- Goto "Integration request" tab and click on Edit
+- Lookup for "URL path parameters" and check if the value is present
+
+<pre>
+Name: code
+Mapped from: method.request.path.code
+</pre>
+
+The API should have the following appearance
+
+![aws-step-function-and-api-gateway-2.png](midias/images/aws-step-function-and-api-gateway/aws-step-function-and-api-gateway-2.png)
+
+You can make some tests if you want of course to guarantee that everything is ok within this API, for example:
+
+![aws-step-function-and-api-gateway-3.png](midias/images/aws-step-function-and-api-gateway/aws-step-function-and-api-gateway-3.png)
+
+Finally, click on "Deploy API", select the stage and give one name, for example: postalcode_api_stage_test. You will 
+be able to see in the GET resource method the "Invoke URL", for example:
+
+<pre>
+https://a1o2x7hhsi.execute-api.us-east-1.amazonaws.com/postalcode_api_stage_test/postalcode/{code}
+</pre>
+
+Save this information, because we will use that and part of that to create the integration with the Step Function. 
+
+#### Creating the Step Function
+
+> TIP:> Below is the ASL code to create a sample Step Function integrated with API Gateway, so to save some time 
+> just copy it and paste in the state machine that we will be creating.
+
+- Click on "Create state machine"
+- Select the blank template and click on "Select" button
+- Goto "{} Code" on the top of the page, and put the following code in it
+
+<pre>
+{
+  "Comment": "A description of my state machine",
+  "StartAt": "Pass",
+  "States": {
+    "Pass": {
+      "Type": "Pass",
+      "Next": "API Gateway Invoke"
+    },
+    "API Gateway Invoke": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::apigateway:invoke",
+      "Parameters": {
+        "ApiEndpoint": "a1o2x7hhsi.execute-api.us-east-1.amazonaws.com",
+        "Method": "GET",
+        "AllowNullValues": true,
+        "Headers": {},
+        "Stage": "postalcode_api_stage_test",
+        "Path.$": "States.Format('/postalcode/{}', $.postalcode)",
+        "RequestBody": {},
+        "AuthType": "IAM_ROLE"
+      },
+      "End": true
+    }
+  }
+}
+</pre>
+
+- Click on "Config" button on the top of the page
+- Type the "State machine name", for example: step_function_for_api_gateway_test
+- Select the Permission in the "Execution role"
+  - Select the role: step_function_role_for_api_gateway
+- Click on "Create" button on the right top of the screen
+
+If everything is ok, so the Step Function will be created successfully, and the "Execution" will be activated to make
+some tests. The Step Function should have the following appearance.
+
+![aws-step-function-and-api-gateway-4.png](midias/images/aws-step-function-and-api-gateway/aws-step-function-and-api-gateway-4.png)
+
+As an extra configuration you can do others changes in the input or output from the API Gateway Invoke test, 
+for example, select the "API Gateway Invoke" and goto the "Output" tab, see the image below that configurations
+
+![aws-step-function-and-api-gateway-5.png](midias/images/aws-step-function-and-api-gateway/aws-step-function-and-api-gateway-5.png)
+
+<pre>
+[v] Transform result with ResultSelector - optional  
+{
+	"result.$": "$.ResponseBody"
+}
+
+[v] Filter output with OutputPath - optional  
+$.result
+</pre>
+
+#### Testing the integration
+
+- To make tests, click on "Execution" button, and wait for the new page open that offer a input to make tests.
+- Type the following data:
+
+<pre>
+{
+    "postalcode": "12090002"
+}
+</pre>
+
+- Click on "Start execution"
+
+If everything was ok, you should be able to see one result in the screen something like below
+
+![aws-step-function-and-api-gateway-6.png](midias/images/aws-step-function-and-api-gateway/aws-step-function-and-api-gateway-6.png)
+
+Because you had configured the Output result for the API Gateway Invoke, the result will be something like below:
+
+<pre>
+{
+  "cep": "12090-002",
+  "logradouro": "Rua São Caetano",
+  "complemento": "",
+  "unidade": "",
+  "bairro": "Campos Elíseos",
+  "localidade": "Taubaté",
+  "uf": "SP",
+  "estado": "São Paulo",
+  "regiao": "Sudeste",
+  "ibge": "3554102",
+  "gia": "6889",
+  "ddd": "12",
+  "siafi": "7183"
+}
+</pre>
+
+[//]: # (------------------------------------------------------------------------------------------------------------)
+
 <br /><br />
 <a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
 
@@ -2365,6 +2666,8 @@ follows below:
                 - SERVICE4 = hello-world-4.jar
             - DATABASE
               - RDS: MYSQL
+
+[//]: # (------------------------------------------------------------------------------------------------------------)
 
 <br /><br />
 <a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
