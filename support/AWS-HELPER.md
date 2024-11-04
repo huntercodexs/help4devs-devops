@@ -2126,7 +2126,7 @@ integration between these resources and the code or ASL format not really matter
   - Type the "Role name" as "lambda_for_step_function_sample_test"
   - Click on "Create role" button
 
-Now make the last steps again, but now to create another ROLE, this role will be applied to Step Function call the 
+Now make the last steps again, but now to create another ROLE, this role will be applied for Step Function call the 
 Aws Lambda function, so for that follow the instructions below
 
 - Click on "Create role" button
@@ -2202,7 +2202,7 @@ So now, the first function is created, let us create the second one
 
 - Click on "Create function" button again
 - Choose "Author from scratch"
-- Type the name of the function: lambda_function_test
+- Type the name of the function: lambda_function_to_response_test
 - Select python 3.8 as a Runtime
 - Expand the option "Change default execution role"
   - Select "Use an existing role"
