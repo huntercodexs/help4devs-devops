@@ -51,6 +51,7 @@ A simple instructions to help developers in overall cases to make configurations
 - <a href="#AWS-NETWORKING">AWS NETWORKING</a>
 - <a href="#S3-ROUTE53-ACM-CLOUD-FRONT">S3 ROUTE53 ACM CLOUD FRONT</a>
 - <a href="#API-GATEWAY-AND-LAMBDA">API GATEWAY AND LAMBDA</a>
+- <a href="#AWS-LAMBDA-AND-STEP-FUNCTION-THEN-AWS-LAMBDA">AWS LAMBDA AND STEP FUNCTION THEN AWS LAMBDA</a>
 - <a href="#LOCALSTACK">LOCALSTACK</a>
 
 <br /><br />
@@ -1731,9 +1732,6 @@ Now you can access the static website using HTTPS and one friendly URL, for exam
 
 ## API-GATEWAY-AND-LAMBDA
 
-<br /><br />
-<a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
-
 #### LAMBDA FUNCTION CREATE
 
 To create a lambda function, follow the instructions below, in this example we will use python as a 
@@ -2083,6 +2081,252 @@ POST https://onye7f9qo0.execute-api.us-east-1.amazonaws.com/calculator_stage_tes
     "c": 3.0
 }
 </pre>
+
+<br /><br />
+<a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
+
+## AWS LAMBDA AND STEP FUNCTION THEN AWS LAMBDA
+
+#### Summary
+
+In this quick and direct tutorial we will explain how to implement an integration between Lambda and Step Function from 
+AWS Services. In this case the sample will be made following the flow below:
+
+<pre>
+AWS_LAMBDA -> STEP_FUNCTION -> AWS_LAMBDA
+</pre>
+
+The Lambda Function wil call the Step Function and the Step Function will be call the Lambda Function according 
+illustration below:
+
+![aws-lambda-and-step-function-then-aws-lambda-1.png](midias/images/aws-lambda-and-step-function-then-aws-lambda/aws-lambda-and-step-function-then-aws-lambda-1.png)
+
+The complete scenario that will be explained here is shown below, note that this scenario is just for clarify the 
+integration between these resources and the code or ASL format not really matter.
+
+#### Create the Roles
+
+- Goto IAM Dashboard and click on "Create role" button
+- Fill the form using the following data
+  - Select AWS service
+  - Search for "Lambda" in the "Use case" input 
+  - Select the permissions "AWSStepFunctionsFullAccess"
+  <pre>
+  {
+      "Version": "2012-10-17",
+      "Statement": [
+          {
+              "Effect": "Allow",
+              "Action": "states:*",
+              "Resource": "*"
+          }
+      ]
+  }
+  </pre>
+  - Type the "Role name" as "lambda_for_step_function_sample_test"
+  - Click on "Create role" button
+
+Now make the last steps again, but now to create another ROLE, this role will be applied to Step Function call the 
+Aws Lambda function, so for that follow the instructions below
+
+- Click on "Create role" button
+  - Fill the form using the following data
+    - Select AWS service
+    - Search for "Step functions" in the "Use case" input
+    - Select the permissions "AWSLambdaRole"
+    <pre>
+    {
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Effect": "Allow",
+                "Action": [
+                    "lambda:InvokeFunction"
+                ],
+                "Resource": [
+                    "*"
+                ]
+            }
+        ]
+    }
+    </pre>
+    - Type the "Role name" as "step_function_for_lambda_role_test"
+    - Click on "Create role" button
+
+At this moment the dashboard Roles should look like something below
+
+![aws-lambda-and-step-function-then-aws-lambda-2.png](midias/images/aws-lambda-and-step-function-then-aws-lambda/aws-lambda-and-step-function-then-aws-lambda-2.png)
+
+> TIP: If you need or desire, check the Policies as well
+
+#### Create the Lambda Functions
+
+Now we go create the lambdas that it will be used in this sample flow, actually we will create two lambda functions, 
+one for call the step functions and other one to respond for step function when it was called. Firstly, let us create 
+the "lambda_function_test" (to call the step function), and after we will create the "lambda_function_to_response_test" (to respond for step function).
+
+In that way, let us verify how to create the first lambda function.
+
+- Click on "Create function" button
+- Choose "Author from scratch"
+- Type the name of the function: lambda_function_test
+- Select python 3.8 as a Runtime
+- Expand the option "Change default execution role"
+  - Select "Use an existing role"
+  - Select the role "lambda_for_step_function_sample_test"
+- Click on "Create function" button
+- Goto for Code Tab in the code editor and put this code in it
+
+<pre>
+import json
+import boto3
+import uuid
+
+client = boto3.client('stepfunctions')
+
+def lambda_handler(event, context):
+  transactionId = str(uuid.uuid1())
+
+  input = {'TransactionId': transactionId, 'Type': 'PURCHASE'}
+
+  response = client.start_execution(
+    stateMachineArn='{PUT-HERE-THE-ARN-RESOURCE-STEP-FUNCTION}',
+    name=transactionId,
+    input=json.dumps(input)
+    )
+</pre>
+
+- You can make some test if you want to before go ahead
+
+So now, the first function is created, let us create the second one
+
+- Click on "Create function" button again
+- Choose "Author from scratch"
+- Type the name of the function: lambda_function_test
+- Select python 3.8 as a Runtime
+- Expand the option "Change default execution role"
+  - Select "Use an existing role"
+  - Select the role "lambda_for_step_function_sample_test"
+- Click on "Create function" button
+- Goto for Code Tab in the code editor and put this code in it
+
+<pre>
+import json
+
+def lambda_handler(event, context):
+    
+    resp = {
+        'id': '123',
+        'desc': 'test for lambda'
+    }
+
+    return resp
+
+</pre>
+
+- You can make some test if you want to before go ahead
+
+The lambda function is ready to process, but we need to create the step functions right now.
+
+#### Create the Step Functions
+
+The Amazon State Language to use in this use case is affordable below
+
+<pre>
+{
+  "Comment": "Step Function From Lambda Test",
+  "StartAt": "Pass",
+  "States": {
+    "Pass": {
+      "Type": "Pass",
+      "Parameters": {
+        "MessageBody": {
+          "TransactionId.$": "$.TransactionId",
+          "Type.$": "$.Type"
+        }
+      },
+      "Next": "Lambda Invoke Test"
+    },
+    "Lambda Invoke Test": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "Payload.$": "$",
+        "FunctionName": "{AWS-LAMBDA-FUNCTION-NAME}"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException"
+          ],
+          "IntervalSeconds": 1,
+          "MaxAttempts": 3,
+          "BackoffRate": 2
+        }
+      ],
+      "End": true,
+      "ResultSelector": {
+        "testCod.$": "$.Payload.id",
+        "testMessage.$": "$.Payload.desc"
+      },
+      "ResultPath": "$.originalInputTest"
+    }
+  }
+}
+</pre>
+
+So you don't need to follow the step bby step to achieve this result, just create a new Step Function using the ASL 
+above, and so, make the following adjustments
+
+![aws-lambda-and-step-function-then-aws-lambda-3.png](midias/images/aws-lambda-and-step-function-then-aws-lambda/aws-lambda-and-step-function-then-aws-lambda-3.png)
+
+- Click on "Config" button at the top of the page
+- In Permissions, select "Enter a role ARN"
+- In the Role ARN type the ARN from the lambda function created before, for example:
+  - arn:aws:iam::{account-id}:role/step_function_for_lambda_role_test
+  - This configuration will allow the Step Function to call the Lambda Function
+
+Everything is done because we used the ASL that was made previously, however, just for give a little bit more understand, 
+lets go check some configuration fields in this Step Functions
+
+- Click on Pass state, and go to the tab input on the right side of page
+- Look that the field "Transform input with Parameters - optional" is checked, and there is a following content:
+
+<pre>
+{
+  "MessageBody": {
+    "TransactionId.$": "$.TransactionId",
+    "Type.$": "$.Type"
+  }
+}
+</pre>
+
+It is very important to know that this field will be transforming the data input in another format, as you need. Other 
+place that you can check is clicking on "Lambda Invoke Test" and check the fields that are related within, some of 
+these fields are listed below
+
+- Configuration TAB > Function name: Select "Enter function name" and select the function in the field below of that
+- Output TAB > "Transform result with ResultSelector - optional", use this tab to transform data before send the final response to the requesters, for example:
+
+<pre>
+{
+  "testCod.$": "$.Payload.id",
+  "testMessage.$": "$.Payload.desc"
+}
+</pre>
+
+So now, everything is done, and if you make all these things correctly, it is possible to make some tests going to 
+lambda function named "lambda_function_test" clicking Test TAB and invoke the test. This test will perform all steps 
+in the flow, passing throughout the Step Function and the invocation of the another lambda from the Step Function. You 
+can check the processing and executing seem the "Executions" section in the Step Function target, for example:
+
+![aws-lambda-and-step-function-then-aws-lambda-4.png](midias/images/aws-lambda-and-step-function-then-aws-lambda/aws-lambda-and-step-function-then-aws-lambda-4.png)
+
+<br /><br />
+<a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
 
 ## AWS NETWORKING
 
