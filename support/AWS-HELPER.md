@@ -53,6 +53,7 @@ A simple instructions to help developers in overall cases to make configurations
 - <a href="#API-GATEWAY-AND-LAMBDA">API GATEWAY AND LAMBDA</a>
 - <a href="#AWS-LAMBDA-AND-STEP-FUNCTION-THEN-AWS-LAMBDA">AWS LAMBDA AND STEP FUNCTION THEN AWS LAMBDA</a>
 - <a href="#AWS-STEP-FUNCTION-AND-AWS-API-GATEWAY">AWS STEP FUNCTION AND AWS API GATEWAY</a>
+- <a href="#AWS-STEP-FUNCTION-AND-DYNAMO-DB">AWS STEP FUNCTION AND DYNAMO DB</a>
 - <a href="#LOCALSTACK">LOCALSTACK</a>
 
 [//]: # (------------------------------------------------------------------------------------------------------------)
@@ -2621,6 +2622,692 @@ Because you had configured the Output result for the API Gateway Invoke, the res
   "gia": "6889",
   "ddd": "12",
   "siafi": "7183"
+}
+</pre>
+
+[//]: # (------------------------------------------------------------------------------------------------------------)
+
+<br /><br />
+<a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
+
+## AWS STEP FUNCTION AND DYNAMO DB
+
+#### Overview
+
+![aws-step-functions-and-dynamodb-1.png](midias/images/aws-step-functions-and-dynamodb/aws-step-functions-and-dynamodb-1.png)
+
+In this topic we will create some integrations between Step Function and Dynamo DB to explain how to work and how to 
+configure the Step Function to execute the following functions:
+
+- Create Table
+- Create Item
+- Update Item
+- Delete Item
+- Delete Table
+- Get Item
+- Create Item (using PUT)
+
+In the above image we have the scenario that we are talking about.
+
+> TIP: You don't need to make any action in the Dynamo DB to create table or items because everything it will be made 
+> using Step Functions, unless you want to check the results in the table (collection)
+
+#### Create the proper roles
+
+> Role: AWSServiceRoleForApplicationAutoScaling_DynamoDBTable
+
+- Click on "Create role"
+- Select AWS Service and choose DynamoDB
+- Type the Name: AWSServiceRoleForApplicationAutoScaling_DynamoDBTable
+- Check the Permissions
+
+<pre>
+  {
+      "Version": "2012-10-17",
+      "Statement": [
+          {
+              "Effect": "Allow",
+              "Action": [
+                  "dynamodb:DescribeTable",
+                  "dynamodb:UpdateTable",
+                  "cloudwatch:PutMetricAlarm",
+                  "cloudwatch:DescribeAlarms",
+                  "cloudwatch:DeleteAlarms"
+              ],
+              "Resource": "*"
+          }
+      ]
+  }
+</pre>
+
+- Check the Trusts
+
+<pre>
+  {
+      "Version": "2012-10-17",
+      "Statement": [
+          {
+              "Effect": "Allow",
+              "Principal": {
+                  "Service": "dynamodb.application-autoscaling.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+          }
+      ]
+  }
+</pre>
+
+> Role: dynamo_db_for_step_function_test_role
+
+- Click on "Create role" again
+- Select AWS Service and choose DynamoDB
+- Type the name: dynamo_db_for_step_function_test_role
+- Check the Permissions
+- 
+<pre>
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": [
+                "dynamodb:*",
+                "dax:*",
+                "application-autoscaling:DeleteScalingPolicy",
+                "application-autoscaling:DeregisterScalableTarget",
+                "application-autoscaling:DescribeScalableTargets",
+                "application-autoscaling:DescribeScalingActivities",
+                "application-autoscaling:DescribeScalingPolicies",
+                "application-autoscaling:PutScalingPolicy",
+                "application-autoscaling:RegisterScalableTarget",
+                "cloudwatch:DeleteAlarms",
+                "cloudwatch:DescribeAlarmHistory",
+                "cloudwatch:DescribeAlarms",
+                "cloudwatch:DescribeAlarmsForMetric",
+                "cloudwatch:GetMetricStatistics",
+                "cloudwatch:ListMetrics",
+                "cloudwatch:PutMetricAlarm",
+                "cloudwatch:GetMetricData",
+                "datapipeline:ActivatePipeline",
+                "datapipeline:CreatePipeline",
+                "datapipeline:DeletePipeline",
+                "datapipeline:DescribeObjects",
+                "datapipeline:DescribePipelines",
+                "datapipeline:GetPipelineDefinition",
+                "datapipeline:ListPipelines",
+                "datapipeline:PutPipelineDefinition",
+                "datapipeline:QueryObjects",
+                "ec2:DescribeVpcs",
+                "ec2:DescribeSubnets",
+                "ec2:DescribeSecurityGroups",
+                "iam:GetRole",
+                "iam:ListRoles",
+                "kms:DescribeKey",
+                "kms:ListAliases",
+                "sns:CreateTopic",
+                "sns:DeleteTopic",
+                "sns:ListSubscriptions",
+                "sns:ListSubscriptionsByTopic",
+                "sns:ListTopics",
+                "sns:Subscribe",
+                "sns:Unsubscribe",
+                "sns:SetTopicAttributes",
+                "lambda:CreateFunction",
+                "lambda:ListFunctions",
+                "lambda:ListEventSourceMappings",
+                "lambda:CreateEventSourceMapping",
+                "lambda:DeleteEventSourceMapping",
+                "lambda:GetFunctionConfiguration",
+                "lambda:DeleteFunction",
+                "resource-groups:ListGroups",
+                "resource-groups:ListGroupResources",
+                "resource-groups:GetGroup",
+                "resource-groups:GetGroupQuery",
+                "resource-groups:DeleteGroup",
+                "resource-groups:CreateGroup",
+                "tag:GetResources",
+                "kinesis:ListStreams",
+                "kinesis:DescribeStream",
+                "kinesis:DescribeStreamSummary"
+            ],
+            "Effect": "Allow",
+            "Resource": "*"
+        },
+        {
+            "Action": "cloudwatch:GetInsightRuleReport",
+            "Effect": "Allow",
+            "Resource": "arn:aws:cloudwatch:*:*:insight-rule/DynamoDBContributorInsights*"
+        },
+        {
+            "Action": [
+                "iam:PassRole"
+            ],
+            "Effect": "Allow",
+            "Resource": "*",
+            "Condition": {
+                "StringLike": {
+                    "iam:PassedToService": [
+                        "application-autoscaling.amazonaws.com",
+                        "application-autoscaling.amazonaws.com.cn",
+                        "dax.amazonaws.com"
+                    ]
+                }
+            }
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "iam:CreateServiceLinkedRole"
+            ],
+            "Resource": "*",
+            "Condition": {
+                "StringEquals": {
+                    "iam:AWSServiceName": [
+                        "replication.dynamodb.amazonaws.com",
+                        "dax.amazonaws.com",
+                        "dynamodb.application-autoscaling.amazonaws.com",
+                        "contributorinsights.dynamodb.amazonaws.com",
+                        "kinesisreplication.dynamodb.amazonaws.com"
+                    ]
+                }
+            }
+        }
+    ]
+}
+</pre>
+
+- Check the rust
+
+<pre>
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "",
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "dax.amazonaws.com"
+            },
+            "Action": "sts:AssumeRole"
+        }
+    ]
+}
+</pre>
+
+> Role: step_function_for_dynamo_bd_test_role
+
+- Click on "Create role" again
+- Select AWS Service and choose Step Functions
+- Type the name: step_function_for_dynamo_bd_test_role
+- Check the Permissions
+
+<pre>
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": [
+                "dynamodb:*",
+                "dax:*",
+                "application-autoscaling:DeleteScalingPolicy",
+                "application-autoscaling:DeregisterScalableTarget",
+                "application-autoscaling:DescribeScalableTargets",
+                "application-autoscaling:DescribeScalingActivities",
+                "application-autoscaling:DescribeScalingPolicies",
+                "application-autoscaling:PutScalingPolicy",
+                "application-autoscaling:RegisterScalableTarget",
+                "cloudwatch:DeleteAlarms",
+                "cloudwatch:DescribeAlarmHistory",
+                "cloudwatch:DescribeAlarms",
+                "cloudwatch:DescribeAlarmsForMetric",
+                "cloudwatch:GetMetricStatistics",
+                "cloudwatch:ListMetrics",
+                "cloudwatch:PutMetricAlarm",
+                "cloudwatch:GetMetricData",
+                "datapipeline:ActivatePipeline",
+                "datapipeline:CreatePipeline",
+                "datapipeline:DeletePipeline",
+                "datapipeline:DescribeObjects",
+                "datapipeline:DescribePipelines",
+                "datapipeline:GetPipelineDefinition",
+                "datapipeline:ListPipelines",
+                "datapipeline:PutPipelineDefinition",
+                "datapipeline:QueryObjects",
+                "ec2:DescribeVpcs",
+                "ec2:DescribeSubnets",
+                "ec2:DescribeSecurityGroups",
+                "iam:GetRole",
+                "iam:ListRoles",
+                "kms:DescribeKey",
+                "kms:ListAliases",
+                "sns:CreateTopic",
+                "sns:DeleteTopic",
+                "sns:ListSubscriptions",
+                "sns:ListSubscriptionsByTopic",
+                "sns:ListTopics",
+                "sns:Subscribe",
+                "sns:Unsubscribe",
+                "sns:SetTopicAttributes",
+                "lambda:CreateFunction",
+                "lambda:ListFunctions",
+                "lambda:ListEventSourceMappings",
+                "lambda:CreateEventSourceMapping",
+                "lambda:DeleteEventSourceMapping",
+                "lambda:GetFunctionConfiguration",
+                "lambda:DeleteFunction",
+                "resource-groups:ListGroups",
+                "resource-groups:ListGroupResources",
+                "resource-groups:GetGroup",
+                "resource-groups:GetGroupQuery",
+                "resource-groups:DeleteGroup",
+                "resource-groups:CreateGroup",
+                "tag:GetResources",
+                "kinesis:ListStreams",
+                "kinesis:DescribeStream",
+                "kinesis:DescribeStreamSummary"
+            ],
+            "Effect": "Allow",
+            "Resource": "*"
+        },
+        {
+            "Action": "cloudwatch:GetInsightRuleReport",
+            "Effect": "Allow",
+            "Resource": "arn:aws:cloudwatch:*:*:insight-rule/DynamoDBContributorInsights*"
+        },
+        {
+            "Action": [
+                "iam:PassRole"
+            ],
+            "Effect": "Allow",
+            "Resource": "*",
+            "Condition": {
+                "StringLike": {
+                    "iam:PassedToService": [
+                        "application-autoscaling.amazonaws.com",
+                        "application-autoscaling.amazonaws.com.cn",
+                        "dax.amazonaws.com"
+                    ]
+                }
+            }
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "iam:CreateServiceLinkedRole"
+            ],
+            "Resource": "*",
+            "Condition": {
+                "StringEquals": {
+                    "iam:AWSServiceName": [
+                        "replication.dynamodb.amazonaws.com",
+                        "dax.amazonaws.com",
+                        "dynamodb.application-autoscaling.amazonaws.com",
+                        "contributorinsights.dynamodb.amazonaws.com",
+                        "kinesisreplication.dynamodb.amazonaws.com"
+                    ]
+                }
+            }
+        }
+    ]
+}
+</pre>
+
+- Check the Trust
+
+<pre>
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "states.amazonaws.com"
+            },
+            "Action": "sts:AssumeRole"
+        }
+    ]
+}
+</pre>
+
+#### Create the Step Function
+
+This step function contains all steps that will be performed in the Dynamo DB dynamically, so for get the State Machine 
+ready, just copy the ASL below and copy in on e blank Step Function resource that was created using the 
+"Create state machine" button
+
+![aws-step-functions-and-dynamodb-3.png](midias/images/aws-step-functions-and-dynamodb/aws-step-functions-and-dynamodb-3.png)
+
+Now goto the "{} Code" button inside the State Machine edition and paste the following ASL
+
+<pre>
+{
+  "Comment": "A description of my state machine",
+  "StartAt": "Input Pass",
+  "States": {
+    "Input Pass": {
+      "Type": "Pass",
+      "Next": "Choice Action"
+    },
+    "Choice Action": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.input.action",
+          "StringEquals": "create-table",
+          "Next": "Create Table"
+        },
+        {
+          "Variable": "$.input.action",
+          "StringEquals": "create-item",
+          "Next": "Create Item"
+        },
+        {
+          "Variable": "$.input.action",
+          "StringEquals": "delete-item",
+          "Next": "Delete Item"
+        },
+        {
+          "Variable": "$.input.action",
+          "StringEquals": "update-item",
+          "Next": "Update Item"
+        },
+        {
+          "Variable": "$.input.action",
+          "StringEquals": "delete-table",
+          "Next": "DeleteTable"
+        },
+        {
+          "Variable": "$.input.action",
+          "StringEquals": "get-item",
+          "Next": "Get Item"
+        },
+        {
+          "Variable": "$.input.action",
+          "StringEquals": "put-item",
+          "Next": "Put Item"
+        }
+      ]
+    },
+    "Create Table": {
+      "Type": "Task",
+      "Parameters": {
+        "TableName": "MyDynamoDBTable",
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "myId",
+            "AttributeType": "S"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "myId",
+            "KeyType": "HASH"
+          }
+        ],
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5
+        }
+      },
+      "Resource": "arn:aws:states:::aws-sdk:dynamodb:createTable",
+      "Next": "Success CT"
+    },
+    "Success CT": {
+      "Type": "Succeed"
+    },
+    "Create Item": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::dynamodb:putItem",
+      "Parameters": {
+        "TableName": "MyDynamoDBTable",
+        "Item": {
+          "myId": {
+            "S.$": "$.myId"
+          },
+          "myUsername": {
+            "S.$": "$.myUsername"
+          },
+          "myPassword": {
+            "S.$": "$.myPassword"
+          },
+          "myNumber": {
+            "N.$": "$.myNumber"
+          },
+          "myValidation": {
+            "BOOL.$": "$.myValidation"
+          },
+          "myList": {
+            "L": [
+              {
+                "S.$": "$.myList[0]"
+              },
+              {
+                "S.$": "$.myList[1]"
+              },
+              {
+                "N.$": "$.myList[2]"
+              }
+            ]
+          }
+        }
+      },
+      "Next": "Success CI"
+    },
+    "Success CI": {
+      "Type": "Succeed"
+    },
+    "Delete Item": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::dynamodb:deleteItem",
+      "Parameters": {
+        "TableName": "MyDynamoDBTable",
+        "Key": {
+          "myId": {
+            "S.$": "$.myId"
+          }
+        }
+      },
+      "Next": "Success DI"
+    },
+    "Success DI": {
+      "Type": "Succeed"
+    },
+    "Update Item": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::dynamodb:updateItem",
+      "Parameters": {
+        "TableName": "MyDynamoDBTable",
+        "Key": {
+          "myId": {
+            "S.$": "$.myId"
+          }
+        },
+        "UpdateExpression": "SET myUsername = :myValueRef1, myPassword = :myValueRef2",
+        "ExpressionAttributeValues": {
+          ":myValueRef1": {
+            "S.$": "$.newName"
+          },
+          ":myValueRef2": {
+            "S.$": "$.newName"
+          }
+        }
+      },
+      "Next": "Success UI"
+    },
+    "Success UI": {
+      "Type": "Succeed"
+    },
+    "DeleteTable": {
+      "Type": "Task",
+      "Parameters": {
+        "TableName": "MyDynamoDBTable"
+      },
+      "Resource": "arn:aws:states:::aws-sdk:dynamodb:deleteTable",
+      "Next": "Success DT"
+    },
+    "Success DT": {
+      "Type": "Succeed"
+    },
+    "Get Item": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::dynamodb:getItem",
+      "Parameters": {
+        "TableName": "MyDynamoDBTable",
+        "Key": {
+          "myId": {
+            "S.$": "$.myId"
+          }
+        }
+      },
+      "Next": "Success GI",
+      "OutputPath": "$.Item"
+    },
+    "Success GI": {
+      "Type": "Succeed"
+    },
+    "Put Item": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::dynamodb:putItem",
+      "Parameters": {
+        "TableName": "MyDynamoDBTable",
+        "Item": {
+          "myId": {
+            "S.$": "$.myId"
+          },
+          "myUsername": {
+            "S.$": "$.myUsername"
+          },
+          "myPassword": {
+            "S.$": "$.myPassword"
+          },
+          "myNumber": {
+            "N.$": "$.myNumber"
+          },
+          "myValidation": {
+            "BOOL.$": "$.myValidation"
+          },
+          "myList": {
+            "L": [
+              {
+                "S.$": "$.myList[0]"
+              },
+              {
+                "S.$": "$.myList[1]"
+              },
+              {
+                "N.$": "$.myList[2]"
+              }
+            ]
+          }
+        }
+      },
+      "Next": "Success PI"
+    },
+    "Success PI": {
+      "Type": "Succeed"
+    }
+  }
+}
+</pre>
+
+- Optionally, you can configure the Output of the "Get Item" to retrieve a result more clear and friendly, for example: 
+
+<pre>
+[v] Filter output with OutputPath - optional
+$.Item
+</pre>
+
+After you make this changes, you should goto the "Config" options in the current machine to set up the correct role. This 
+can be made using the option box according the image below
+
+![aws-step-functions-and-dynamodb-2.png](midias/images/aws-step-functions-and-dynamodb/aws-step-functions-and-dynamodb-2.png)
+
+##### Testing
+
+TO facilitate and optimize your time, you can use the following data input (affordable below) to make some tests
+
+- Create Table
+
+<pre>
+{
+    "input": {
+        "action": "create-table"
+    }
+}
+</pre>
+
+- Create Item
+
+<pre>
+{
+    "input": {
+        "action": "create-item"
+    },
+    "myId": "123456",
+    "myUsername": "dynamo db test",
+    "myPassword": "123test",
+    "myNumber": "111",
+    "myValidation": false,
+    "myList": ["field1", "field2", "1234567899999"]
+}
+</pre>
+
+- Get Item
+
+<pre>
+{
+    "input": {
+        "action": "get-item"
+    },
+    "myId": "123456"
+}
+</pre>
+
+- Delete Item
+
+<pre>
+{
+    "input": {
+        "action": "delete-item"
+    },
+    "myId": "123456"
+}
+</pre>
+
+- Update Item
+
+<pre>
+{
+    "input": {
+        "action": "update-item"
+    },
+    "myId": "123456",
+    "newName": "new dynamo db test",
+    "newTest": "new testing"
+}
+</pre>
+
+- Create Item (using PUT)
+
+<pre>
+{
+    "input": {
+        "action": "put-item"
+    },
+    "myId": "19292929",
+    "myUsername": "dynamo db test 2",
+    "myPassword": "123test1",
+    "myNumber": "223",
+    "myValidation": true,
+    "myList": ["field1", "field2", "1234567899999"]
+}
+</pre>
+
+- Delete Table
+<pre>
+{
+    "input": {
+        "action": "delete-table"
+    }
 }
 </pre>
 
