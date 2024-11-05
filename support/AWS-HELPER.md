@@ -2652,6 +2652,54 @@ In the above image we have the scenario that we are talking about.
 > TIP: You don't need to make any action in the Dynamo DB to create table or items because everything it will be made 
 > using Step Functions, unless you want to check the results in the table (collection)
 
+#### Create the proper policies
+
+> TIP: Filter the items in the "Filter Actions" search box, for example: GetItem
+
+> Policy: policy_for_step_functions_work_on_dynamo_db_test
+
+<pre>
+{
+	"Version": "2012-10-17",
+	"Statement": [
+		{
+			"Effect": "Allow",
+			"Action": [
+				"dynamodb:GetItem",
+				"dynamodb:PutItem",
+				"dynamodb:UpdateItem",
+				"dynamodb:DeleteItem"
+			],
+			"Resource": [
+				"*"
+			]
+		}
+	]
+}
+</pre>
+
+> Policy: policy_for_step_function_work_on_xray_test
+
+<pre>
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+                "xray:GetSamplingRules",
+                "xray:GetSamplingTargets"
+            ],
+            "Resource": [
+                "*"
+            ]
+        }
+    ]
+}
+</pre>
+
 #### Create the proper role
 
 > NOTE: Perhaps, be necessary to create the step function before 
@@ -2680,8 +2728,8 @@ In the above image we have the scenario that we are talking about.
 - Click on Next button
 - Select the roles:
   - AmazonDynamoDBFullAccess
-  - DynamoDBTableContentScopedAccessPolicy-... (Perhaps, be necessary to create the step function before)
-  - XRayAccessPolicy-... (Maybe be necessary to create the step function before)
+  - policy_for_step_functions_work_on_dynamo_db_test
+  - policy_for_step_function_work_on_xray_test
 - Type the Role name: role_for_step_function_call_dynamo_db_test
 - Click on "Create role" button
 
@@ -2937,7 +2985,7 @@ After you make this changes, you should goto the "Config" options in the current
 This can be made using the option box according the image below
 
 State machine name: step-function-for-dynamo-db-test
-Role: step_function_for_dynamo_bd_test_role
+Role: role_for_step_function_call_dynamo_db_test
 
 ![aws-step-functions-and-dynamodb-2.png](midias/images/aws-step-functions-and-dynamodb/aws-step-functions-and-dynamodb-2.png)
 
@@ -2945,7 +2993,9 @@ Role: step_function_for_dynamo_bd_test_role
 
 ##### Testing
 
-TO facilitate and optimize your time, you can use the following data input (affordable below) to make some tests
+To facilitate and optimize your time, you can use the following data input (affordable below) to make some tests
+
+![aws-step-functions-and-dynamodb-4.png](midias/images/aws-step-functions-and-dynamodb/aws-step-functions-and-dynamodb-4.png)
 
 - Click on "Execute" button
 
