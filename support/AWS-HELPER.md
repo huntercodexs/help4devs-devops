@@ -2984,8 +2984,10 @@ $.Item
 After you make this changes, you should goto the "Config" options in the current machine to set up the correct role. 
 This can be made using the option box according the image below
 
+<pre>
 State machine name: step-function-for-dynamo-db-test
 Role: role_for_step_function_call_dynamo_db_test
+</pre>
 
 ![aws-step-functions-and-dynamodb-2.png](midias/images/aws-step-functions-and-dynamodb/aws-step-functions-and-dynamodb-2.png)
 
