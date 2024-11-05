@@ -2652,306 +2652,15 @@ In the above image we have the scenario that we are talking about.
 > TIP: You don't need to make any action in the Dynamo DB to create table or items because everything it will be made 
 > using Step Functions, unless you want to check the results in the table (collection)
 
-#### Create the proper roles
+#### Create the proper role
 
-> Role: AWSServiceRoleForApplicationAutoScaling_DynamoDBTable
+> NOTE: Perhaps, be necessary to create the step function before 
 
-- Click on "Create role"
-- Select AWS Service and choose DynamoDB
-- Type the Name: AWSServiceRoleForApplicationAutoScaling_DynamoDBTable
-- Check the Permissions
-
-<pre>
-  {
-      "Version": "2012-10-17",
-      "Statement": [
-          {
-              "Effect": "Allow",
-              "Action": [
-                  "dynamodb:DescribeTable",
-                  "dynamodb:UpdateTable",
-                  "cloudwatch:PutMetricAlarm",
-                  "cloudwatch:DescribeAlarms",
-                  "cloudwatch:DeleteAlarms"
-              ],
-              "Resource": "*"
-          }
-      ]
-  }
-</pre>
-
-- Check the Trusts
-
-<pre>
-  {
-      "Version": "2012-10-17",
-      "Statement": [
-          {
-              "Effect": "Allow",
-              "Principal": {
-                  "Service": "dynamodb.application-autoscaling.amazonaws.com"
-              },
-              "Action": "sts:AssumeRole"
-          }
-      ]
-  }
-</pre>
-
-> Role: dynamo_db_for_step_function_test_role
+> Role: role_for_step_function_call_dynamo_db_test
 
 - Click on "Create role" again
-- Select AWS Service and choose DynamoDB
-- Type the name: dynamo_db_for_step_function_test_role
-- Check the Permissions
-- 
-<pre>
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Action": [
-                "dynamodb:*",
-                "dax:*",
-                "application-autoscaling:DeleteScalingPolicy",
-                "application-autoscaling:DeregisterScalableTarget",
-                "application-autoscaling:DescribeScalableTargets",
-                "application-autoscaling:DescribeScalingActivities",
-                "application-autoscaling:DescribeScalingPolicies",
-                "application-autoscaling:PutScalingPolicy",
-                "application-autoscaling:RegisterScalableTarget",
-                "cloudwatch:DeleteAlarms",
-                "cloudwatch:DescribeAlarmHistory",
-                "cloudwatch:DescribeAlarms",
-                "cloudwatch:DescribeAlarmsForMetric",
-                "cloudwatch:GetMetricStatistics",
-                "cloudwatch:ListMetrics",
-                "cloudwatch:PutMetricAlarm",
-                "cloudwatch:GetMetricData",
-                "datapipeline:ActivatePipeline",
-                "datapipeline:CreatePipeline",
-                "datapipeline:DeletePipeline",
-                "datapipeline:DescribeObjects",
-                "datapipeline:DescribePipelines",
-                "datapipeline:GetPipelineDefinition",
-                "datapipeline:ListPipelines",
-                "datapipeline:PutPipelineDefinition",
-                "datapipeline:QueryObjects",
-                "ec2:DescribeVpcs",
-                "ec2:DescribeSubnets",
-                "ec2:DescribeSecurityGroups",
-                "iam:GetRole",
-                "iam:ListRoles",
-                "kms:DescribeKey",
-                "kms:ListAliases",
-                "sns:CreateTopic",
-                "sns:DeleteTopic",
-                "sns:ListSubscriptions",
-                "sns:ListSubscriptionsByTopic",
-                "sns:ListTopics",
-                "sns:Subscribe",
-                "sns:Unsubscribe",
-                "sns:SetTopicAttributes",
-                "lambda:CreateFunction",
-                "lambda:ListFunctions",
-                "lambda:ListEventSourceMappings",
-                "lambda:CreateEventSourceMapping",
-                "lambda:DeleteEventSourceMapping",
-                "lambda:GetFunctionConfiguration",
-                "lambda:DeleteFunction",
-                "resource-groups:ListGroups",
-                "resource-groups:ListGroupResources",
-                "resource-groups:GetGroup",
-                "resource-groups:GetGroupQuery",
-                "resource-groups:DeleteGroup",
-                "resource-groups:CreateGroup",
-                "tag:GetResources",
-                "kinesis:ListStreams",
-                "kinesis:DescribeStream",
-                "kinesis:DescribeStreamSummary"
-            ],
-            "Effect": "Allow",
-            "Resource": "*"
-        },
-        {
-            "Action": "cloudwatch:GetInsightRuleReport",
-            "Effect": "Allow",
-            "Resource": "arn:aws:cloudwatch:*:*:insight-rule/DynamoDBContributorInsights*"
-        },
-        {
-            "Action": [
-                "iam:PassRole"
-            ],
-            "Effect": "Allow",
-            "Resource": "*",
-            "Condition": {
-                "StringLike": {
-                    "iam:PassedToService": [
-                        "application-autoscaling.amazonaws.com",
-                        "application-autoscaling.amazonaws.com.cn",
-                        "dax.amazonaws.com"
-                    ]
-                }
-            }
-        },
-        {
-            "Effect": "Allow",
-            "Action": [
-                "iam:CreateServiceLinkedRole"
-            ],
-            "Resource": "*",
-            "Condition": {
-                "StringEquals": {
-                    "iam:AWSServiceName": [
-                        "replication.dynamodb.amazonaws.com",
-                        "dax.amazonaws.com",
-                        "dynamodb.application-autoscaling.amazonaws.com",
-                        "contributorinsights.dynamodb.amazonaws.com",
-                        "kinesisreplication.dynamodb.amazonaws.com"
-                    ]
-                }
-            }
-        }
-    ]
-}
-</pre>
-
-- Check the rust
-
-<pre>
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Sid": "",
-            "Effect": "Allow",
-            "Principal": {
-                "Service": "dax.amazonaws.com"
-            },
-            "Action": "sts:AssumeRole"
-        }
-    ]
-}
-</pre>
-
-> Role: step_function_for_dynamo_bd_test_role
-
-- Click on "Create role" again
-- Select AWS Service and choose Step Functions
-- Type the name: step_function_for_dynamo_bd_test_role
-- Check the Permissions
-
-<pre>
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Action": [
-                "dynamodb:*",
-                "dax:*",
-                "application-autoscaling:DeleteScalingPolicy",
-                "application-autoscaling:DeregisterScalableTarget",
-                "application-autoscaling:DescribeScalableTargets",
-                "application-autoscaling:DescribeScalingActivities",
-                "application-autoscaling:DescribeScalingPolicies",
-                "application-autoscaling:PutScalingPolicy",
-                "application-autoscaling:RegisterScalableTarget",
-                "cloudwatch:DeleteAlarms",
-                "cloudwatch:DescribeAlarmHistory",
-                "cloudwatch:DescribeAlarms",
-                "cloudwatch:DescribeAlarmsForMetric",
-                "cloudwatch:GetMetricStatistics",
-                "cloudwatch:ListMetrics",
-                "cloudwatch:PutMetricAlarm",
-                "cloudwatch:GetMetricData",
-                "datapipeline:ActivatePipeline",
-                "datapipeline:CreatePipeline",
-                "datapipeline:DeletePipeline",
-                "datapipeline:DescribeObjects",
-                "datapipeline:DescribePipelines",
-                "datapipeline:GetPipelineDefinition",
-                "datapipeline:ListPipelines",
-                "datapipeline:PutPipelineDefinition",
-                "datapipeline:QueryObjects",
-                "ec2:DescribeVpcs",
-                "ec2:DescribeSubnets",
-                "ec2:DescribeSecurityGroups",
-                "iam:GetRole",
-                "iam:ListRoles",
-                "kms:DescribeKey",
-                "kms:ListAliases",
-                "sns:CreateTopic",
-                "sns:DeleteTopic",
-                "sns:ListSubscriptions",
-                "sns:ListSubscriptionsByTopic",
-                "sns:ListTopics",
-                "sns:Subscribe",
-                "sns:Unsubscribe",
-                "sns:SetTopicAttributes",
-                "lambda:CreateFunction",
-                "lambda:ListFunctions",
-                "lambda:ListEventSourceMappings",
-                "lambda:CreateEventSourceMapping",
-                "lambda:DeleteEventSourceMapping",
-                "lambda:GetFunctionConfiguration",
-                "lambda:DeleteFunction",
-                "resource-groups:ListGroups",
-                "resource-groups:ListGroupResources",
-                "resource-groups:GetGroup",
-                "resource-groups:GetGroupQuery",
-                "resource-groups:DeleteGroup",
-                "resource-groups:CreateGroup",
-                "tag:GetResources",
-                "kinesis:ListStreams",
-                "kinesis:DescribeStream",
-                "kinesis:DescribeStreamSummary"
-            ],
-            "Effect": "Allow",
-            "Resource": "*"
-        },
-        {
-            "Action": "cloudwatch:GetInsightRuleReport",
-            "Effect": "Allow",
-            "Resource": "arn:aws:cloudwatch:*:*:insight-rule/DynamoDBContributorInsights*"
-        },
-        {
-            "Action": [
-                "iam:PassRole"
-            ],
-            "Effect": "Allow",
-            "Resource": "*",
-            "Condition": {
-                "StringLike": {
-                    "iam:PassedToService": [
-                        "application-autoscaling.amazonaws.com",
-                        "application-autoscaling.amazonaws.com.cn",
-                        "dax.amazonaws.com"
-                    ]
-                }
-            }
-        },
-        {
-            "Effect": "Allow",
-            "Action": [
-                "iam:CreateServiceLinkedRole"
-            ],
-            "Resource": "*",
-            "Condition": {
-                "StringEquals": {
-                    "iam:AWSServiceName": [
-                        "replication.dynamodb.amazonaws.com",
-                        "dax.amazonaws.com",
-                        "dynamodb.application-autoscaling.amazonaws.com",
-                        "contributorinsights.dynamodb.amazonaws.com",
-                        "kinesisreplication.dynamodb.amazonaws.com"
-                    ]
-                }
-            }
-        }
-    ]
-}
-</pre>
-
-- Check the Trust
+- Select Custom trust policy
+- Type the following trust policy in the "Custom trust policy"
 
 <pre>
 {
@@ -2967,6 +2676,14 @@ In the above image we have the scenario that we are talking about.
     ]
 }
 </pre>
+
+- Click on Next button
+- Select the roles:
+  - AmazonDynamoDBFullAccess
+  - DynamoDBTableContentScopedAccessPolicy-... (Perhaps, be necessary to create the step function before)
+  - XRayAccessPolicy-... (Maybe be necessary to create the step function before)
+- Type the Role name: role_for_step_function_call_dynamo_db_test
+- Click on "Create role" button
 
 #### Create the Step Function
 
@@ -3216,16 +2933,23 @@ Now goto the "{} Code" button inside the State Machine edition and paste the fol
 $.Item
 </pre>
 
-After you make this changes, you should goto the "Config" options in the current machine to set up the correct role. This 
-can be made using the option box according the image below
+After you make this changes, you should goto the "Config" options in the current machine to set up the correct role. 
+This can be made using the option box according the image below
+
+State machine name: step-function-for-dynamo-db-test
+Role: step_function_for_dynamo_bd_test_role
 
 ![aws-step-functions-and-dynamodb-2.png](midias/images/aws-step-functions-and-dynamodb/aws-step-functions-and-dynamodb-2.png)
+
+- Click on "Create" button
 
 ##### Testing
 
 TO facilitate and optimize your time, you can use the following data input (affordable below) to make some tests
 
-- Create Table
+- Click on "Execute" button
+
+###### Create Table
 
 <pre>
 {
@@ -3235,7 +2959,7 @@ TO facilitate and optimize your time, you can use the following data input (affo
 }
 </pre>
 
-- Create Item
+###### Create Item
 
 <pre>
 {
@@ -3251,7 +2975,7 @@ TO facilitate and optimize your time, you can use the following data input (affo
 }
 </pre>
 
-- Get Item
+###### Get Item
 
 <pre>
 {
@@ -3262,7 +2986,7 @@ TO facilitate and optimize your time, you can use the following data input (affo
 }
 </pre>
 
-- Delete Item
+###### Delete Item
 
 <pre>
 {
@@ -3273,7 +2997,7 @@ TO facilitate and optimize your time, you can use the following data input (affo
 }
 </pre>
 
-- Update Item
+###### Update Item
 
 <pre>
 {
@@ -3286,7 +3010,7 @@ TO facilitate and optimize your time, you can use the following data input (affo
 }
 </pre>
 
-- Create Item (using PUT)
+###### Create Item (using PUT)
 
 <pre>
 {
@@ -3302,7 +3026,7 @@ TO facilitate and optimize your time, you can use the following data input (affo
 }
 </pre>
 
-- Delete Table
+###### Delete Table
 <pre>
 {
     "input": {
