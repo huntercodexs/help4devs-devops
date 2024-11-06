@@ -3545,6 +3545,8 @@ In this topic we will demonstrate how to invoke one AWS STEP FUNCTION from other
 
 - Create the first step, that will be call the second step, use the ASL below to do it
 
+> Name: first-step-function-to-call-second-step-function-test
+
 <pre>
 {
   "Comment": "A description of my state machine",
@@ -3574,6 +3576,8 @@ In this topic we will demonstrate how to invoke one AWS STEP FUNCTION from other
 > WARNING: Don't forget to set the correct permissions in the "Execution role" from "Config" menu
 
 - Now, let's go to create the second step function using the ASL below
+
+> Name: second-step-function-test
 
 <pre>
 {
