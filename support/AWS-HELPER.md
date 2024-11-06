@@ -49,12 +49,13 @@ A simple instructions to help developers in overall cases to make configurations
 - <a href="#SECURITY-GROUP">SECURITY GROUP</a>
 - <a href="#COSTS-ESTIMATES">COSTS ESTIMATES</a>
 - <a href="#AWS-NETWORKING">AWS NETWORKING</a>
+- <a href="#LOCALSTACK">LOCALSTACK</a>
 - <a href="#S3-ROUTE53-ACM-CLOUD-FRONT">S3 ROUTE53 ACM CLOUD FRONT</a>
 - <a href="#API-GATEWAY-AND-LAMBDA">API GATEWAY AND LAMBDA</a>
 - <a href="#AWS-LAMBDA-AND-STEP-FUNCTION-THEN-AWS-LAMBDA">AWS LAMBDA AND STEP FUNCTION THEN AWS LAMBDA</a>
 - <a href="#AWS-STEP-FUNCTION-AND-AWS-API-GATEWAY">AWS STEP FUNCTION AND AWS API GATEWAY</a>
 - <a href="#AWS-STEP-FUNCTION-AND-DYNAMO-DB">AWS STEP FUNCTION AND DYNAMO DB</a>
-- <a href="#LOCALSTACK">LOCALSTACK</a>
+- <a href="#AWS-STEP-FUNCTION-CALL-AWS-STEP-FUNCTION">AWS STEP FUNCTION CALL AWS STEP FUNCTION</a>
 
 [//]: # (------------------------------------------------------------------------------------------------------------)
 
@@ -1480,6 +1481,329 @@ others things relate to that. Below is the short explanations about the resource
 <a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
 
 ## COSTS ESTIMATES
+
+[//]: # (------------------------------------------------------------------------------------------------------------)
+
+<br /><br />
+<a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
+
+## AWS NETWORKING
+
+In this topic we can see one small concept project to view how to work an environment based on AWS Cloud services.
+Belo is the overview image to presentation this subject in a quickly and understandably way.
+
+![know-how-AWS NETWORK.png](midias/images/aws-networking.png)
+
+As we can see in the above image, there is a lot of resources used from AWS Cloud services that those are describe as
+follows below:
+
+- AWS CLOUD
+- REGION
+- VPC
+- INTERNET GATEWAY
+  - ROUTER
+    - AVAILABILITY ZONE
+    - PUBLIC ROUTER TABLE
+      - ACL
+        - PUBLIC SUBNET
+          - SECURITY GROUP 1
+            - MFA
+              - EC2 - MAINTENANCE
+          - SECURITY GROUP 2
+            - EC2 - NGINX REVERSE PROXY
+      - NAT INTERNET
+    - PRIVATE ROUTER TABLE
+      - ACL
+        - PRIVATE SUBNET
+          - SECURITY GROUP 3
+            - EC2 - MICROSERVICE
+              - QUANTITY = 4
+                - SERVICE1 = hello-world-1.jar
+                - SERVICE2 = hello-world-2.jar
+                - SERVICE3 = hello-world-3.jar
+                - SERVICE4 = hello-world-4.jar
+            - DATABASE
+              - RDS: MYSQL
+
+[//]: # (------------------------------------------------------------------------------------------------------------)
+
+<br /><br />
+<a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
+
+## LOCALSTACK
+
+Local Stack is a tool to emulate the AWS environment, you can install this tools in your local
+machine following the instructions below.
+
+#### Account Creation
+
+First of all, you need to create one account in the Local Stack website, so for that goto
+https://app.localstack.cloud/sign-in and create your account or make a login case you already
+have an account.
+
+#### Installing
+
+- Goto https://docs.localstack.cloud/getting-started/installation
+- Lookup for "LocalStack CLI" section and choose the OS type installation
+- In this case we are going to install Local Stack in the Ubuntu 20.04 (Linux)
+- Follow the instructions in that page, that currently are:
+
+###### Using LocalStack CLI
+
+[Download Local Stack]
+
+<pre>
+mkdir LocalStack
+
+cd LocalStack
+
+curl --output localstack-cli-3.5.0-linux-amd64-onefile.tar.gz \
+    --location https://github.com/localstack/localstack-cli/releases/download/v3.5.0/localstack-cli-3.5.0-linux-amd64-onefile.tar.gz
+</pre>
+
+[Extract Local Stack]
+
+<pre>
+sudo tar xvzf localstack-cli-3.5.0-linux-*-onefile.tar.gz -C /usr/local/bin
+</pre>
+
+[Version]
+
+<pre>
+localstack --version
+</pre>
+
+<pre>
+localstack start
+</pre>
+
+The result should be something like below
+
+<pre>
+
+     __                     _______ __             __
+    / /   ____  _________ _/ / ___// /_____ ______/ /__
+   / /   / __ \/ ___/ __ `/ /\__ \/ __/ __ `/ ___/ //_/
+  / /___/ /_/ / /__/ /_/ / /___/ / /_/ /_/ / /__/ ,<
+ /_____/\____/\___/\__,_/_//____/\__/\__,_/\___/_/|_|
+
+ 💻 LocalStack CLI 3.5.0
+ 👤 Profile: default
+
+[21:08:30] starting LocalStack in Docker mode 🐳                                                                           localstack.py:503
+           container image not found on host                                                                               bootstrap.py:1272
+[21:08:55] download complete                                                                                               bootstrap.py:1276
+────────────────────────────────────────────── LocalStack Runtime Log (press CTRL-C to quit) ───────────────────────────────────────────────
+
+LocalStack version: 3.5.1.dev
+LocalStack build date: 2024-07-09
+LocalStack build git hash: b2faf9556
+
+Ready.
+
+</pre>
+
+###### Using Docker Compose
+
+Alternative it is to install via Docker Compose
+
+<pre>
+version: "3.8"
+
+services:
+  localstack:
+    container_name: "${LOCALSTACK_DOCKER_NAME:-localstack-main}"
+    image: localstack/localstack
+    ports:
+      - "127.0.0.1:4566:4566"            # LocalStack Gateway
+      - "127.0.0.1:4510-4559:4510-4559"  # external services port range
+    environment:
+      # LocalStack configuration: https://docs.localstack.cloud/references/configuration/
+      - DEBUG=${DEBUG:-0}
+    volumes:
+      - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    networks:
+        - open_network
+
+networks:
+    open_network:
+        external: true
+</pre>
+
+<pre>
+docker network create open_network
+docker-compose up
+</pre>
+
+The result should be something like below
+
+<pre>
+Digest: sha256:20444945562d6dec896ab8e856466776c1c494dcbcf8e2a66d9171c9d168660d
+Status: Downloaded newer image for localstack/localstack:latest
+Creating localstack-main ... done
+Attaching to localstack-main
+localstack-main | 
+localstack-main | LocalStack version: 3.5.1.dev
+localstack-main | LocalStack build date: 2024-07-09
+localstack-main | LocalStack build git hash: b2faf9556
+localstack-main | 
+localstack-main | Ready.
+</pre>
+
+<pre>
+localstack config validate
+</pre>
+
+<pre>
+docker-compose start
+</pre>
+
+The result must be something like below
+
+<pre>
+     Name               Command             State                                              Ports                                        
+--------------------------------------------------------------------------------------------------------------------------------------------
+localstack-main   docker-entrypoint.sh   Up (healthy)   0.0.0.0:4510->4510/tcp,:::4510->4510/tcp, 0.0.0.0:4511->4511/tcp,:::4511->4511/tcp, 
+                                                        0.0.0.0:4512->4512/tcp,:::4512->4512/tcp, 0.0.0.0:4513->4513/tcp,:::4513->4513/tcp, 
+                                                        0.0.0.0:4514->4514/tcp,:::4514->4514/tcp, 0.0.0.0:4515->4515/tcp,:::4515->4515/tcp, 
+                                                        0.0.0.0:4516->4516/tcp,:::4516->4516/tcp, 0.0.0.0:4517->4517/tcp,:::4517->4517/tcp, 
+                                                        0.0.0.0:4518->4518/tcp,:::4518->4518/tcp, 0.0.0.0:4519->4519/tcp,:::4519->4519/tcp, 
+                                                        0.0.0.0:4520->4520/tcp,:::4520->4520/tcp, 0.0.0.0:4521->4521/tcp,:::4521->4521/tcp, 
+                                                        0.0.0.0:4522->4522/tcp,:::4522->4522/tcp, 0.0.0.0:4523->4523/tcp,:::4523->4523/tcp, 
+                                                        0.0.0.0:4524->4524/tcp,:::4524->4524/tcp, 0.0.0.0:4525->4525/tcp,:::4525->4525/tcp, 
+                                                        0.0.0.0:4526->4526/tcp,:::4526->4526/tcp, 0.0.0.0:4527->4527/tcp,:::4527->4527/tcp, 
+                                                        0.0.0.0:4528->4528/tcp,:::4528->4528/tcp, 0.0.0.0:4529->4529/tcp,:::4529->4529/tcp, 
+                                                        0.0.0.0:4530->4530/tcp,:::4530->4530/tcp, 0.0.0.0:4531->4531/tcp,:::4531->4531/tcp, 
+                                                        0.0.0.0:4532->4532/tcp,:::4532->4532/tcp, 0.0.0.0:4533->4533/tcp,:::4533->4533/tcp, 
+                                                        0.0.0.0:4534->4534/tcp,:::4534->4534/tcp, 0.0.0.0:4535->4535/tcp,:::4535->4535/tcp, 
+                                                        0.0.0.0:4536->4536/tcp,:::4536->4536/tcp, 0.0.0.0:4537->4537/tcp,:::4537->4537/tcp, 
+                                                        0.0.0.0:4538->4538/tcp,:::4538->4538/tcp, 0.0.0.0:4539->4539/tcp,:::4539->4539/tcp, 
+                                                        0.0.0.0:4540->4540/tcp,:::4540->4540/tcp, 0.0.0.0:4541->4541/tcp,:::4541->4541/tcp, 
+                                                        0.0.0.0:4542->4542/tcp,:::4542->4542/tcp, 0.0.0.0:4543->4543/tcp,:::4543->4543/tcp, 
+                                                        0.0.0.0:4544->4544/tcp,:::4544->4544/tcp, 0.0.0.0:4545->4545/tcp,:::4545->4545/tcp, 
+                                                        0.0.0.0:4546->4546/tcp,:::4546->4546/tcp, 0.0.0.0:4547->4547/tcp,:::4547->4547/tcp, 
+                                                        0.0.0.0:4548->4548/tcp,:::4548->4548/tcp, 0.0.0.0:4549->4549/tcp,:::4549->4549/tcp, 
+                                                        0.0.0.0:4550->4550/tcp,:::4550->4550/tcp, 0.0.0.0:4551->4551/tcp,:::4551->4551/tcp, 
+                                                        0.0.0.0:4552->4552/tcp,:::4552->4552/tcp, 0.0.0.0:4553->4553/tcp,:::4553->4553/tcp, 
+                                                        0.0.0.0:4554->4554/tcp,:::4554->4554/tcp, 0.0.0.0:4555->4555/tcp,:::4555->4555/tcp, 
+                                                        0.0.0.0:4556->4556/tcp,:::4556->4556/tcp, 0.0.0.0:4557->4557/tcp,:::4557->4557/tcp, 
+                                                        0.0.0.0:4558->4558/tcp,:::4558->4558/tcp, 0.0.0.0:4559->4559/tcp,:::4559->4559/tcp, 
+                                                        0.0.0.0:4566->4566/tcp,:::4566->4566/tcp, 5678/tcp                                  
+</pre>
+
+#### Using LocalStack Desktop
+
+There is other one type of Local Stack installation through AppImage, you can get the application image from the URL
+https://app.localstack.cloud/download. After access this URL, choose the OS target, for example Linux, and get the
+file download. So when the download is finished, just click on the file downloaded using the right button of the mouse
+click on Properties, and lookup for "Permissions Tab", in that tab you need to enable ou allow the AppImage file for
+running like as a program, look at below ons example.
+
+![localstack-desktop-app-image-enable.png](midias/images/localstack-desktop-app-image-enable.png)
+
+The Local Stack Desktop will be running like a proper program in your machine, it probably will be something like below
+
+![localstack-desktop-running.png](midias/images/localstack-desktop-running.png)
+
+> NOTE: Login is required, so make sure you have a account already created and activated.
+
+#### Local Stack Dashboard
+
+Now in the Local Stack website you can see the services status from the current local installations that simulate
+one real environment on AWS Services, for example:
+
+![localstack-status-services.png](midias/images/localstack-status-services.png)
+
+#### AWS CLI Commands
+
+You can interact with LocalStack using AWS CLI, for that follow the sample below
+
+- Install the <a href="#AWS-CLI">AWS-CLI</a>
+- Open one terminal and type one command like below
+
+<pre>
+export AWS_ACCESS_KEY_ID="test"
+export AWS_SECRET_ACCESS_KEY="test"
+export AWS_DEFAULT_REGION="us-east-1"
+</pre>
+
+<pre>
+aws --endpoint-url="http://localhost:4566" s3 ls
+</pre>
+
+Also, you can to create a profile configuration file at the root path of the current user, for example.
+
+<pre>
+~/.aws/config
+</pre>
+
+<pre>
+region=us-east-1
+output=json
+endpoint_url = http://localhost:4566
+</pre>
+
+<pre>
+~/.aws/credentials
+</pre>
+
+<pre>
+[localstack]
+aws_access_key_id=test
+aws_secret_access_key=test
+</pre>
+
+You can now use the localstack profile with the aws CLI:
+
+<pre>
+aws s3 mb s3://test --profile localstack
+aws s3 ls --profile localstack
+</pre>
+
+#### Uninstalling
+
+<pre>
+#!/bin/bash
+
+echo "This process can't to be undo, Continue ?"
+echo "Press [Enter] to continue, Press [Ctrl+C] to Abort "
+read OP
+
+sleep 2
+
+echo "Removing localstack, folders, and links"
+sudo rm -rf /usr/local/bin/localstack
+
+sleep 2
+
+echo "Unsetting the env variables"
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+AWS_DEFAULT_REGION=
+unset AWS_ACCESS_KEY_ID
+unset AWS_SECRET_ACCESS_KEY
+unset AWS_DEFAULT_REGION=
+
+sleep 2
+
+echo ""
+echo -n "Removing Docker Containers ? Continue[Y], Skip[N]: "
+read RMDOCKER
+
+if [[ "${RMDOCKER}" == "Y" ]]; 
+then
+    docker-compose stop
+    docker container rm -v localstack-main
+    docker image rm localstack/localstack:latest
+else
+    echo "OK - Skipping"
+fi
+echo ""
+
+echo "DONE"
+exit
+</pre>
 
 [//]: # (------------------------------------------------------------------------------------------------------------)
 
@@ -3092,331 +3416,186 @@ To facilitate and optimize your time, you can use the following data input (affo
 <br /><br />
 <a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
 
-## AWS NETWORKING
+## AWS STEP FUNCTION CALL AWS STEP FUNCTION
 
-In this topic we can see one small concept project to view how to work an environment based on AWS Cloud services.
-Belo is the overview image to presentation this subject in a quickly and understandably way.
+In this topic we will demonstrate how to invoke one AWS STEP FUNCTION from other AWS STEP FUNCTION.
 
-![know-how-AWS NETWORK.png](midias/images/aws-networking.png)
+#### Create the proper policies
 
-As we can see in the above image, there is a lot of resources used from AWS Cloud services that those are describe as
-follows below:
-
-- AWS CLOUD
-- REGION
-- VPC
-- INTERNET GATEWAY
-  - ROUTER
-    - AVAILABILITY ZONE
-    - PUBLIC ROUTER TABLE
-      - ACL
-        - PUBLIC SUBNET
-          - SECURITY GROUP 1
-            - MFA
-              - EC2 - MAINTENANCE
-          - SECURITY GROUP 2
-            - EC2 - NGINX REVERSE PROXY
-      - NAT INTERNET
-    - PRIVATE ROUTER TABLE
-      - ACL
-        - PRIVATE SUBNET
-          - SECURITY GROUP 3
-            - EC2 - MICROSERVICE
-              - QUANTITY = 4
-                - SERVICE1 = hello-world-1.jar
-                - SERVICE2 = hello-world-2.jar
-                - SERVICE3 = hello-world-3.jar
-                - SERVICE4 = hello-world-4.jar
-            - DATABASE
-              - RDS: MYSQL
-
-[//]: # (------------------------------------------------------------------------------------------------------------)
-
-<br /><br />
-<a href="#AWS-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
-
-## LOCALSTACK
-
-Local Stack is a tool to emulate the AWS environment, you can install this tools in your local
-machine following the instructions below.
-
-#### Account Creation
-
-First of all, you need to create one account in the Local Stack website, so for that goto
-https://app.localstack.cloud/sign-in and create your account or make a login case you already 
-have an account.
-
-#### Installing
-
-- Goto https://docs.localstack.cloud/getting-started/installation
-- Lookup for "LocalStack CLI" section and choose the OS type installation
-- In this case we are going to install Local Stack in the Ubuntu 20.04 (Linux)
-- Follow the instructions in that page, that currently are:
-
-###### Using LocalStack CLI
-
-[Download Local Stack]
+> Policy: policy_for_step_functions_work_on_step_function_test
 
 <pre>
-mkdir LocalStack
-
-cd LocalStack
-
-curl --output localstack-cli-3.5.0-linux-amd64-onefile.tar.gz \
-    --location https://github.com/localstack/localstack-cli/releases/download/v3.5.0/localstack-cli-3.5.0-linux-amd64-onefile.tar.gz
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "states:StartExecution"
+            ],
+            "Resource": [
+                *
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "states:DescribeExecution",
+                "states:StopExecution"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "events:PutTargets",
+                "events:PutRule",
+                "events:DescribeRule"
+            ],
+            "Resource": [
+                *
+            ]
+        }
+    ]
+}
 </pre>
 
-[Extract Local Stack]
+> Policy: policy_for_step_function_work_on_xray_test
 
 <pre>
-sudo tar xvzf localstack-cli-3.5.0-linux-*-onefile.tar.gz -C /usr/local/bin
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+                "xray:GetSamplingRules",
+                "xray:GetSamplingTargets"
+            ],
+            "Resource": [
+                "*"
+            ]
+        }
+    ]
+}
 </pre>
 
-[Version]
+#### Create the proper role
+
+> Role: role_for_step_function_call_step_function_test
+
+- Click on "Create role" again
+- Select Custom trust policy
+- Type the following trust policy in the "Custom trust policy"
 
 <pre>
-localstack --version
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "states.amazonaws.com"
+            },
+            "Action": "sts:AssumeRole"
+        }
+    ]
+}
 </pre>
+
+- Click on Next button
+- Select the roles:
+  - AWSStepFunctionsFullAccess
+  - policy_for_step_functions_work_on_step_function_test
+  - policy_for_step_function_work_on_xray_test
+- Type the Role name: role_for_step_function_call_step_function_test
+- Click on "Create role" button
+
+> Role: role_for_step_function_test
+
+- Click on "Create role" again
+- Select Custom trust policy
+- Type the following trust policy in the "Custom trust policy"
 
 <pre>
-localstack start
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "states.amazonaws.com"
+            },
+            "Action": "sts:AssumeRole"
+        }
+    ]
+}
 </pre>
 
-The result should be something like below
+- Click on Next button
+- Select the roles:
+  - policy_for_step_functions_work_on_step_function_test
+  - policy_for_step_function_work_on_xray_test
+- Type the Role name: role_for_step_function_test
+- Click on "Create role" button
+
+#### Create the Step Function
+
+- Create the first step, that will be call the second step, use the ASL below to do it
 
 <pre>
-
-     __                     _______ __             __
-    / /   ____  _________ _/ / ___// /_____ ______/ /__
-   / /   / __ \/ ___/ __ `/ /\__ \/ __/ __ `/ ___/ //_/
-  / /___/ /_/ / /__/ /_/ / /___/ / /_/ /_/ / /__/ ,<
- /_____/\____/\___/\__,_/_//____/\__/\__,_/\___/_/|_|
-
- 💻 LocalStack CLI 3.5.0
- 👤 Profile: default
-
-[21:08:30] starting LocalStack in Docker mode 🐳                                                                           localstack.py:503
-           container image not found on host                                                                               bootstrap.py:1272
-[21:08:55] download complete                                                                                               bootstrap.py:1276
-────────────────────────────────────────────── LocalStack Runtime Log (press CTRL-C to quit) ───────────────────────────────────────────────
-
-LocalStack version: 3.5.1.dev
-LocalStack build date: 2024-07-09
-LocalStack build git hash: b2faf9556
-
-Ready.
-
+{
+  "Comment": "A description of my state machine",
+  "StartAt": "Pass",
+  "States": {
+    "Pass": {
+      "Type": "Pass",
+      "Next": "Step Functions StartExecution"
+    },
+    "Step Functions StartExecution": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::states:startExecution.sync:2",
+      "Parameters": {
+        "StateMachineArn": "arn:aws:states:{region}:{account-id}:stateMachine:role_for_step_function_call_step_function_test",
+        "Input": {
+          "StatePayload": "Hello from Step Functions!",
+          "AWS_STEP_FUNCTIONS_STARTED_BY_EXECUTION_ID.$": "$$.Execution.Id",
+          "testing": "I'm a simple step function test"
+        }
+      },
+      "End": true
+    }
+  }
+}
 </pre>
 
-###### Using Docker Compose
+> WARNING: Don't forget to set the correct permissions in the "Execution role" from "Config" menu
 
-Alternative it is to install via Docker Compose
+- Now, let's go to create the second step function using the ASL below
 
 <pre>
-version: "3.8"
-
-services:
-  localstack:
-    container_name: "${LOCALSTACK_DOCKER_NAME:-localstack-main}"
-    image: localstack/localstack
-    ports:
-      - "127.0.0.1:4566:4566"            # LocalStack Gateway
-      - "127.0.0.1:4510-4559:4510-4559"  # external services port range
-    environment:
-      # LocalStack configuration: https://docs.localstack.cloud/references/configuration/
-      - DEBUG=${DEBUG:-0}
-    volumes:
-      - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
-      - "/var/run/docker.sock:/var/run/docker.sock"
-    networks:
-        - open_network
-
-networks:
-    open_network:
-        external: true
+{
+  "Comment": "A description of my state machine",
+  "StartAt": "Pass",
+  "States": {
+    "Pass": {
+      "Type": "Pass",
+      "End": true,
+      "Result": {
+        "result": "OK - Everything is fine"
+      },
+      "ResultPath": "$.stepFunctionResponse"
+    }
+  }
+}
 </pre>
 
-<pre>
-docker network create open_network
-docker-compose up
-</pre>
+If everything was fine, just click in "Execute" to make tests from the first step function, and the scenario should 
+be something like showed in the image below
 
-The result should be something like below
-
-<pre>
-Digest: sha256:20444945562d6dec896ab8e856466776c1c494dcbcf8e2a66d9171c9d168660d
-Status: Downloaded newer image for localstack/localstack:latest
-Creating localstack-main ... done
-Attaching to localstack-main
-localstack-main | 
-localstack-main | LocalStack version: 3.5.1.dev
-localstack-main | LocalStack build date: 2024-07-09
-localstack-main | LocalStack build git hash: b2faf9556
-localstack-main | 
-localstack-main | Ready.
-</pre>
-
-<pre>
-localstack config validate
-</pre>
-
-<pre>
-docker-compose start
-</pre>
-
-The result must be something like below
-
-<pre>
-     Name               Command             State                                              Ports                                        
---------------------------------------------------------------------------------------------------------------------------------------------
-localstack-main   docker-entrypoint.sh   Up (healthy)   0.0.0.0:4510->4510/tcp,:::4510->4510/tcp, 0.0.0.0:4511->4511/tcp,:::4511->4511/tcp, 
-                                                        0.0.0.0:4512->4512/tcp,:::4512->4512/tcp, 0.0.0.0:4513->4513/tcp,:::4513->4513/tcp, 
-                                                        0.0.0.0:4514->4514/tcp,:::4514->4514/tcp, 0.0.0.0:4515->4515/tcp,:::4515->4515/tcp, 
-                                                        0.0.0.0:4516->4516/tcp,:::4516->4516/tcp, 0.0.0.0:4517->4517/tcp,:::4517->4517/tcp, 
-                                                        0.0.0.0:4518->4518/tcp,:::4518->4518/tcp, 0.0.0.0:4519->4519/tcp,:::4519->4519/tcp, 
-                                                        0.0.0.0:4520->4520/tcp,:::4520->4520/tcp, 0.0.0.0:4521->4521/tcp,:::4521->4521/tcp, 
-                                                        0.0.0.0:4522->4522/tcp,:::4522->4522/tcp, 0.0.0.0:4523->4523/tcp,:::4523->4523/tcp, 
-                                                        0.0.0.0:4524->4524/tcp,:::4524->4524/tcp, 0.0.0.0:4525->4525/tcp,:::4525->4525/tcp, 
-                                                        0.0.0.0:4526->4526/tcp,:::4526->4526/tcp, 0.0.0.0:4527->4527/tcp,:::4527->4527/tcp, 
-                                                        0.0.0.0:4528->4528/tcp,:::4528->4528/tcp, 0.0.0.0:4529->4529/tcp,:::4529->4529/tcp, 
-                                                        0.0.0.0:4530->4530/tcp,:::4530->4530/tcp, 0.0.0.0:4531->4531/tcp,:::4531->4531/tcp, 
-                                                        0.0.0.0:4532->4532/tcp,:::4532->4532/tcp, 0.0.0.0:4533->4533/tcp,:::4533->4533/tcp, 
-                                                        0.0.0.0:4534->4534/tcp,:::4534->4534/tcp, 0.0.0.0:4535->4535/tcp,:::4535->4535/tcp, 
-                                                        0.0.0.0:4536->4536/tcp,:::4536->4536/tcp, 0.0.0.0:4537->4537/tcp,:::4537->4537/tcp, 
-                                                        0.0.0.0:4538->4538/tcp,:::4538->4538/tcp, 0.0.0.0:4539->4539/tcp,:::4539->4539/tcp, 
-                                                        0.0.0.0:4540->4540/tcp,:::4540->4540/tcp, 0.0.0.0:4541->4541/tcp,:::4541->4541/tcp, 
-                                                        0.0.0.0:4542->4542/tcp,:::4542->4542/tcp, 0.0.0.0:4543->4543/tcp,:::4543->4543/tcp, 
-                                                        0.0.0.0:4544->4544/tcp,:::4544->4544/tcp, 0.0.0.0:4545->4545/tcp,:::4545->4545/tcp, 
-                                                        0.0.0.0:4546->4546/tcp,:::4546->4546/tcp, 0.0.0.0:4547->4547/tcp,:::4547->4547/tcp, 
-                                                        0.0.0.0:4548->4548/tcp,:::4548->4548/tcp, 0.0.0.0:4549->4549/tcp,:::4549->4549/tcp, 
-                                                        0.0.0.0:4550->4550/tcp,:::4550->4550/tcp, 0.0.0.0:4551->4551/tcp,:::4551->4551/tcp, 
-                                                        0.0.0.0:4552->4552/tcp,:::4552->4552/tcp, 0.0.0.0:4553->4553/tcp,:::4553->4553/tcp, 
-                                                        0.0.0.0:4554->4554/tcp,:::4554->4554/tcp, 0.0.0.0:4555->4555/tcp,:::4555->4555/tcp, 
-                                                        0.0.0.0:4556->4556/tcp,:::4556->4556/tcp, 0.0.0.0:4557->4557/tcp,:::4557->4557/tcp, 
-                                                        0.0.0.0:4558->4558/tcp,:::4558->4558/tcp, 0.0.0.0:4559->4559/tcp,:::4559->4559/tcp, 
-                                                        0.0.0.0:4566->4566/tcp,:::4566->4566/tcp, 5678/tcp                                  
-</pre>
-
-#### Using LocalStack Desktop
-
-There is other one type of Local Stack installation through AppImage, you can get the application image from the URL
-https://app.localstack.cloud/download. After access this URL, choose the OS target, for example Linux, and get the 
-file download. So when the download is finished, just click on the file downloaded using the right button of the mouse 
-click on Properties, and lookup for "Permissions Tab", in that tab you need to enable ou allow the AppImage file for 
-running like as a program, look at below ons example.
-
-![localstack-desktop-app-image-enable.png](midias/images/localstack-desktop-app-image-enable.png)
-
-The Local Stack Desktop will be running like a proper program in your machine, it probably will be something like below
-
-![localstack-desktop-running.png](midias/images/localstack-desktop-running.png)
-
-> NOTE: Login is required, so make sure you have a account already created and activated.
-
-#### Local Stack Dashboard
-
-Now in the Local Stack website you can see the services status from the current local installations that simulate
-one real environment on AWS Services, for example:
-
-![localstack-status-services.png](midias/images/localstack-status-services.png)
-
-#### AWS CLI Commands
-
-You can interact with LocalStack using AWS CLI, for that follow the sample below
-
-- Install the <a href="#AWS-CLI">AWS-CLI</a>
-- Open one terminal and type one command like below
-
-<pre>
-export AWS_ACCESS_KEY_ID="test"
-export AWS_SECRET_ACCESS_KEY="test"
-export AWS_DEFAULT_REGION="us-east-1"
-</pre>
-
-<pre>
-aws --endpoint-url="http://localhost:4566" s3 ls
-</pre>
-
-Also, you can to create a profile configuration file at the root path of the current user, for example.
-
-<pre>
-~/.aws/config
-</pre>
-
-<pre>
-region=us-east-1
-output=json
-endpoint_url = http://localhost:4566
-</pre>
-
-<pre>
-~/.aws/credentials
-</pre>
-
-<pre>
-[localstack]
-aws_access_key_id=test
-aws_secret_access_key=test
-</pre>
-
-You can now use the localstack profile with the aws CLI:
-
-<pre>
-aws s3 mb s3://test --profile localstack
-aws s3 ls --profile localstack
-</pre>
-
-#### Uninstalling
-
-<pre>
-#!/bin/bash
-
-echo "This process can't to be undo, Continue ?"
-echo "Press [Enter] to continue, Press [Ctrl+C] to Abort "
-read OP
-
-sleep 2
-
-echo "Removing localstack, folders, and links"
-sudo rm -rf /usr/local/bin/localstack
-
-sleep 2
-
-echo "Unsetting the env variables"
-AWS_ACCESS_KEY_ID=
-AWS_SECRET_ACCESS_KEY=
-AWS_DEFAULT_REGION=
-unset AWS_ACCESS_KEY_ID
-unset AWS_SECRET_ACCESS_KEY
-unset AWS_DEFAULT_REGION=
-
-sleep 2
-
-echo ""
-echo -n "Removing Docker Containers ? Continue[Y], Skip[N]: "
-read RMDOCKER
-
-if [[ "${RMDOCKER}" == "Y" ]]; 
-then
-    docker-compose stop
-    docker container rm -v localstack-main
-    docker image rm localstack/localstack:latest
-else
-    echo "OK - Skipping"
-fi
-echo ""
-
-echo "DONE"
-exit
-</pre>
-
-
-
-
-
-
-
-
+![aws-step-function-to-aws-step-function-3.png](midias/images/aws-step-function-to-aws-step-function/aws-step-function-to-aws-step-function-3.png)
 
 ---
 <small>
