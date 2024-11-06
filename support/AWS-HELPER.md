@@ -3434,7 +3434,7 @@ In this topic we will demonstrate how to invoke one AWS STEP FUNCTION from other
                 "states:StartExecution"
             ],
             "Resource": [
-                *
+                "*"
             ]
         },
         {
@@ -3453,7 +3453,7 @@ In this topic we will demonstrate how to invoke one AWS STEP FUNCTION from other
                 "events:DescribeRule"
             ],
             "Resource": [
-                *
+                "*"
             ]
         }
     ]
