@@ -17,7 +17,7 @@ sudo apt-get update
 - Install OpenJDK
 
 > TIP: Give a look int the
-> <a href="https://github.com/huntercodexs/help4devs/blob/commons/support/JAVA-INSTALL.md">
+> <a href="https://github.com/huntercodexs/help4devs-devops/blob/main/support/JAVA-INSTALL.md">
 > JAVA INSTALL
 > </a>
 > to install more than one java version or manually installation
@@ -112,7 +112,7 @@ Type=forking
 User=tomcat
 Group=tomcat
 
-Environment="JAVA_HOME=/usr/share/jdk/jdk-11.0.1"
+#Environment="JAVA_HOME=/usr/share/jdk/jdk-11.0.1"
 Environment="JAVA_OPTS=-Djava.security.egd=file:///dev/urandom"
 Environment="CATALINA_BASE=/opt/tomcat"
 Environment="CATALINA_HOME=/opt/tomcat"
@@ -212,7 +212,7 @@ echo "DONE"
 exit
 </pre>
 
-### Almalinux 20.04
+### Almalinux 8.10
 
 ###### Installing
 
@@ -226,7 +226,7 @@ sudo dnf update
 - Install OpenJDK
 
 > TIP: Give a look int the
-> <a href="https://github.com/huntercodexs/help4devs/blob/commons/support/JAVA-INSTALL.md">
+> <a href="https://github.com/huntercodexs/help4devs-devops/blob/commons/support/JAVA-INSTALL.md">
 > JAVA INSTALL
 > </a>
 > to install more than one java version or manually installation
@@ -321,7 +321,7 @@ Type=forking
 User=tomcat
 Group=tomcat
 
-Environment="JAVA_HOME=/usr/share/jdk/jdk-11.0.1"
+#Environment="JAVA_HOME=/usr/share/jdk/jdk-11.0.1"
 Environment="JAVA_OPTS=-Djava.security.egd=file:///dev/urandom"
 Environment="CATALINA_BASE=/opt/tomcat"
 Environment="CATALINA_HOME=/opt/tomcat"

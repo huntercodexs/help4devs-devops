@@ -421,7 +421,7 @@ Now go back to the Bucket lists in the menu placed on left side of the screen to
 If everything is ok, you can upload and download files to the created bucket, and also you can use the sample Java
 project to transfer data for the bucket.
 
-This project can be found in the following repository link https://github.com/huntercodexs/help4devs/tree/aws,
+This project can be found in the following repository link https://github.com/huntercodexs/help4devs-devops/tree/aws,
 you just put the access_key_id and secret_access_key in the application properties file.
 
 <pre>

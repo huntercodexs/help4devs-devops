@@ -15,7 +15,7 @@
 
 > Software
 
-- Docker: Check the link https://github.com/huntercodexs/help4devs/blob/commons/support/DOCKER-HELPER.md
+- Docker: Check the link https://github.com/huntercodexs/help4devs-devops/blob/commons/support/DOCKER-HELPER.md
 - Kubectl, Kubeadm, Kubelet
 
 ### Ubuntu 20.04

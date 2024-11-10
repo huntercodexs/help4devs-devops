@@ -86,7 +86,7 @@ sudo find . | grep nginx | xargs -i sudo rm -rf {}
 
 > TIP: Maybe it will be necessary to restart the machine
 
-### Almalinux 20.04
+### Almalinux 8.10
 
 ###### Installing
 

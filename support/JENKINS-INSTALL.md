@@ -31,7 +31,7 @@ sudo apt-get update
 - Install OpenJDK 17 (required)
 
 > TIP: Give a look int the 
-> <a href="https://github.com/huntercodexs/help4devs/blob/commons/support/JAVA-INSTALL.md">
+> <a href="https://github.com/huntercodexs/help4devs-devops/blob/commons/support/JAVA-INSTALL.md">
 > JAVA INSTALL
 > </a> 
 > to install more than one java version or manually installation
@@ -179,7 +179,7 @@ sudo yum install fontconfig
 - Install OpenJDK 17 (required)
 
 > TIP: Give a look int the
-> <a href="https://github.com/huntercodexs/help4devs/blob/commons/support/JAVA-INSTALL.md">
+> <a href="https://github.com/huntercodexs/help4devs-devops/blob/commons/support/JAVA-INSTALL.md">
 > JAVA INSTALL
 > </a>
 > to install more than one java version or manually installation

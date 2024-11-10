@@ -444,3 +444,236 @@ sudo ln -s /etc/init.d/anydesk /etc/rc2.d/S99anydesk
 > In the case in question, AnyDesk is being tested, so when the system is loaded during the 
 > boot process, it will be possible to access the machine even if no login has been performed.
 
+##### CREATE SYSTEMD SERVICES
+
+###### Tomcat example
+
+- Create user
+
+<pre>
+sudo useradd -m -d /opt/tomcat -U -s /bin/false tomcat
+</pre>
+
+- Create service
+
+<pre>
+sudo vi /etc/systemd/system/tomcat.service
+</pre>
+
+<pre>
+[Unit]
+Description=Tomcat
+After=network.target
+
+[Service]
+Type=forking
+
+User=tomcat
+Group=tomcat
+
+#Environment="JAVA_HOME=/usr/share/jdk/jdk-11.0.1"
+Environment="JAVA_OPTS=-Djava.security.egd=file:///dev/urandom"
+Environment="CATALINA_BASE=/opt/tomcat"
+Environment="CATALINA_HOME=/opt/tomcat"
+Environment="CATALINA_PID=/opt/tomcat/temp/tomcat.pid"
+Environment="CATALINA_OPTS=-Xms512M -Xmx1024M -server -XX:+UseParallelGC"
+
+ExecStart=/opt/tomcat/bin/startup.sh
+ExecStop=/opt/tomcat/bin/shutdown.sh
+
+RestartSec=10
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+</pre>
+
+- Configure the service logs
+
+<pre>
+sudo mkdir -p /opt/tomcat/logs/
+sudo chmod 777 /opt/tomcat/logs/
+sudo chown tomcat:tomcat /opt/tomcat/logs/ -R
+
+sudo mkdir -p /opt/tomcat/temp/
+sudo chmod 777 /opt/tomcat/temp/
+sudo chown tomcat:tomcat /opt/tomcat/temp/ -R
+</pre>
+
+- Allow service port
+
+<pre>
+sudo ufw allow 8080/tcp
+sudo ufw reload
+</pre>
+
+- Manager service status
+
+<pre>
+sudo systemctl daemon-reload
+sudo systemctl enable tomcat
+sudo systemctl stop tomcat
+sudo systemctl start tomcat
+sudo systemctl status tomcat
+</pre>
+
+###### Java example
+
+- Get the service files
+
+<pre>
+{APPLICATION_NAME}.jar
+application.properties
+log4j.xml
+...
+</pre>
+
+- Create user
+
+<pre>
+sudo useradd -m -d /opt/deployer -U -s /bin/false deployer
+</pre>
+
+- Create service
+
+<pre>
+sudo vi /etc/systemd/system/{APPLICATION_NAME}.service
+</pre>
+
+<pre>
+[Unit]
+Description={APPLICATION_NAME}.service
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/var/opt/deployer/{APPLICATION_NAME}
+ExecStart=/usr/bin/java -jar /opt/deployer/{APPLICATION_NAME}/{APPLICATION_NAME}.jar --spring.config.location=/etc/opt/deployer/{APPLICATION_NAME}/application.properties
+Restart=on-abort
+User=deployer
+Group=deployer
+
+[Install]
+WantedBy=multi-user.target
+</pre>
+
+- Create service structure
+
+<pre>
+APP_DIR
+/opt/deployer/{APPLICATION_NAME}/
+
+CONFIG_DIR
+/etc/opt/deployer/{APPLICATION_NAME}/
+
+DATA_DIR
+/var/opt/deployer/{APPLICATION_NAME}/
+
+LOG_DIR
+/var/log/deployer/{APPLICATION_NAME}/
+
+SERVICE_DIR
+/usr/lib/systemd/system/
+/etc/systemd/system/
+</pre>
+
+- Service files
+
+<pre>
+/opt/deployer/{APPLICATION_NAME}/{APPLICATION_NAME}.jar
+/etc/opt/deployer/{APPLICATION_NAME}/application.properties
+/etc/opt/deployer/{APPLICATION_NAME}/log4j2.xml
+/usr/lib/systemd/system/{APPLICATION_NAME}.service
+</pre>
+
+- Allow service port
+
+<pre>
+sudo ufw allow {APPLICATION_PORT}/tcp
+sudo ufw reload
+</pre>
+
+- Manager service status
+
+<pre>
+sudo systemctl daemon-reload
+sudo systemctl enable {APPLICATION_NAME}
+sudo systemctl stop {APPLICATION_NAME}
+sudo systemctl start {APPLICATION_NAME}
+sudo systemctl status {APPLICATION_NAME}
+</pre>
+
+###### Python example
+
+- Create user
+
+<pre>
+sudo useradd -m -d /opt/py_deployer -U -s /bin/false py_deployer
+</pre>
+
+- Create service
+
+<pre>
+sudo vi /etc/systemd/system/{APPLICATION_NAME}.service
+</pre>
+
+<pre>
+[Install]
+WantedBy=multi-user.target
+
+[Unit]
+Description=Gunicorn instance to serve {APPLICATION_NAME}
+After=network.target
+
+[Service]
+User=py_deployer
+Group=www-data
+WorkingDirectory=/opt/py_deployer/{APPLICATION_NAME}
+Environment="PATH=/opt/py_deployer/{APPLICATION_NAME}/bin"
+ExecStart=/opt/py_deployer/{APPLICATION_NAME}/bin/gunicorn --workers 3 --bind unix:{APPLICATION_NAME}.sock -m 007 wsgi:app
+
+[Install]
+WantedBy=multi-user.target
+</pre>
+
+- Service UWSGI
+
+<pre>
+[uwsgi]
+module = wsgi:app
+
+master = true
+processes = 5
+
+socket = {APPLICATION_NAME}.sock
+chmod-socket = 660
+vacuum = true
+
+die-on-term = true
+logto = /var/log/{APPLICATION_NAME}/{APPLICATION_NAME}.log
+</pre>
+
+- Create service structure
+
+<pre>
+/var/log/py_deployer/{APPLICATION_NAME}
+/opt/py_deployer/{APPLICATION_NAME}
+</pre>
+
+- Allow service port
+
+<pre>
+sudo ufw allow {APPLICATION_PORT}/tcp
+sudo ufw reload
+</pre>
+
+- Manager service status
+
+<pre>
+sudo systemctl daemon-reload
+sudo systemctl enable {APPLICATION_NAME}
+sudo systemctl stop {APPLICATION_NAME}
+sudo systemctl start {APPLICATION_NAME}
+sudo systemctl status {APPLICATION_NAME}
+</pre>
+

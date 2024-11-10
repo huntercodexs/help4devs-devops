@@ -55,7 +55,8 @@ jdk-21.0.1
 
 <pre>
 sudo mkdir -p /usr/share/jdk/
-mv jdk1.8.0_212 jdk-11.0.1 jdk-17.0.1 jdk-21.0.1 /usr/share/jdk/
+sudo mv jdk1.8.0_212 jdk-11.0.1 jdk-17.0.1 jdk-21.0.1 /usr/share/jdk/
+cd /usr/share/jdk
 pwd
 /usr/share/jdk
 ls -ltr
