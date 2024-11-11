@@ -428,6 +428,7 @@ Now in the Configuration form page fill entry with the following details
       - Name: Select the targeted server
       - Transfers
         - Source files: **/application.properties
+        - Remote directory: simple-api-demo
   - Mark the "Execute shell script on remote host using ssh"
     - SSH site: Choose the ssh connection created previously
     - Pre build script
@@ -444,7 +445,7 @@ kill -9 $pid
 cp /home/ubuntu-vbox/Deployment/simple-api-demo/target/simple-api-demo-1.0.0-SNAPSHOT.jar $BACKUP_DIR >> /dev/null 2>&1 || echo "JAR FILE NOT FOUND"
 </pre>
 
-- Triggers
+- Pre Steps
   - let as is
 - Build
   - Maven Version: Select the maven version available in the system
@@ -480,7 +481,12 @@ Below we can see these steps illustrated in the sequence a logical flows
 ![jenkins-deploy-1.png](midias/images/jenkins-deploy/jenkins-deploy-8.png)
 ![jenkins-deploy-1.png](midias/images/jenkins-deploy/jenkins-deploy-9.png)
 
-Now you can just click on "Build Now" in the job dashboard to deploy effectively this job.
+Now you can just click on "Build Now" in the job dashboard to deploy effectively this job. After build and deploy 
+successfully, goto the browser or postman tool and make one request like below:
+
+<pre>
+GET http://192.168.0.24:38001/welcome
+</pre>
 
 ## Sources References
 
