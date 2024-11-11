@@ -316,8 +316,8 @@ The information from GitHub account are:
 - Allow the SSH Port 22 in the firewall
 
 <pre>
-ufw allow 38001/tcp
-ufw reload
+sudo ufw allow 38001/tcp
+sudo ufw reload
 </pre>
 
 - Create the folder structure to deploy
@@ -362,39 +362,39 @@ In this case you will need to install the following plugins
 
 Once you have installed the correct plugins, you need to configure each of these plugins.
 
-> CREDENTIALS
+- CREDENTIALS
 
-- Goto the Jenkins dashboard and lookup for "Manage Jenkins" > "Credentials"
-- You can create a "Domain" or just create a new "Credential" inside an existent domain
+  - Goto the Jenkins dashboard and lookup for "Manage Jenkins" > "Credentials"
+  - You can create a "Domain" or just create a new "Credential" inside an existent domain
 
-> SSH
+- SSH
 
-- Goto the Jenkins dashboard and lookup for "Manage Jenkins" > "System"
-- Scroll down until "SSH remote hosts" and click on Add button
-  - Fill the form:
+  - Goto the Jenkins dashboard and lookup for "Manage Jenkins" > "System"
+  - Scroll down until "SSH remote hosts" and click on Add button
+    - Fill the form:
+      - Hostname: 192.168.0.24
+      - Port: 22
+      - Credentials: {credentials} (previously created)
+      - serverAliveInterval: 0
+      - timeout: 0
+  - Scroll down until "SSH Servers"
+    - Name: {ssh-server}
     - Hostname: 192.168.0.24
-    - Port: 22
-    - Credentials: {credentials} (previously created)
-    - serverAliveInterval: 0
-    - timeout: 0
-- Scroll down until "SSH Servers"
-  - Name: {ssh-server}
-  - Hostname: 192.168.0.24
-  - Username: {username}
-  - Remote Directory: /home/ubuntu-vbox/Deployment
+    - Username: {username}
+    - Remote Directory: /home/ubuntu-vbox/Deployment
   
-> JDK
+- JDK
 
-- Now, goto the Jenkins dashboard and lookup for "Manage Jenkins" > "Tools"
-- Scroll down "JDK installations" and click on "Add JDK"
-- Inform the Name and JAVA_HOME for each one
+  - Now, goto the Jenkins dashboard and lookup for "Manage Jenkins" > "Tools"
+  - Scroll down "JDK installations" and click on "Add JDK"
+  - Inform the Name and JAVA_HOME for each one
 
-> MAVEN
+- MAVEN
 
-- Now, goto the Jenkins dashboard and lookup for "Manage Jenkins" > "Tools"
-- Scroll down until "Maven installations" and click on "Add Maven" button
-- Type the Name field, for example: MAVEN_HOME_DIR
-- Type the MAVEN_HOME field, for example: /opt/maven
+  - Now, goto the Jenkins dashboard and lookup for "Manage Jenkins" > "Tools"
+  - Scroll down until "Maven installations" and click on "Add Maven" button
+  - Type the Name field, for example: MAVEN_HOME_DIR
+  - Type the MAVEN_HOME field, for example: /opt/maven
 
 Also, you can mark the option "Install automatically" and choose the Maven Version to apply, in case you 
 need more information about Maven Installation, just follow this document [NEXUS_AND_MAVEN.md](NEXUS_AND_MAVEN.md)
@@ -468,7 +468,7 @@ nohup java -jar /home/ubuntu-vbox/Deployment/simple-api-demo/target/simple-api-d
 </pre>
   - Add "Delete workspace when build is done"
 
-Belo we can see these steps illustrated in the sequence a logical flows
+Below we can see these steps illustrated in the sequence a logical flows
 
 ![jenkins-deploy-1.png](midias/images/jenkins-deploy/jenkins-deploy-1.png)
 ![jenkins-deploy-1.png](midias/images/jenkins-deploy/jenkins-deploy-2.png)
