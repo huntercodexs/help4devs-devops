@@ -1,7 +1,18 @@
 # DEPLOY HELPER
 Make a deployment using one specific and easy way
 
-## JENKINS + JAVA + SPRING BOOT + MAVEN + TOMCAT
+# SUMMARY
+
+- <a href="#JENKINS-JAVA-SPRING_BOOT-MAVEN-TOMCAT">JENKINS JAVA SPRING-BOOT MAVEN TOMCAT</a>
+- <a href="#JENKINS-JAVA-SPRING_BOOT-MAVEN-SSH-NOHUP">JENKINS JAVA SPRING-BOOT MAVEN SSH NOHUP</a>
+- <a href="#JENKINS-JAVA-SPRING_BOOT-MAVEN-SSH-NOHUP-PIPELINE">JENKINS JAVA SPRING-BOOT MAVEN SSH NOHUP PIPELINE</a>
+
+[//]: # (------------------------------------------------------------------------------------------------------------)
+
+<br /><br />
+<a href="#DEPLOY-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
+
+## JENKINS JAVA SPRING_BOOT MAVEN TOMCAT
 
 ### Pre-requisites
 
@@ -9,7 +20,8 @@ Make a deployment using one specific and easy way
 - Java Version 17
 - Jenkins Version: 2.484
 - Tomcat Version: 9.0.96
-- Docker + Docker Compose
+- Docker
+- Docker Compose
 - Spring Boot 2.6.4
 
 ### Java Spring: Java Spring Boot Project Create
@@ -223,7 +235,12 @@ installation, for example MAVEN_HOME.
   - Click on Apply and Save
 - Now in the JOB dashboard click on "Build Now" to deploy the project
 
-## JENKINS + JAVA + SPRING BOOT + MAVEN + SSH + NOHUP
+[//]: # (------------------------------------------------------------------------------------------------------------)
+
+<br /><br />
+<a href="#DEPLOY-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
+
+## JENKINS JAVA SPRING_BOOT MAVEN SSH NOHUP
 
 ### Pre-requisites
 
@@ -487,6 +504,304 @@ successfully, goto the browser or postman tool and make one request like below:
 <pre>
 GET http://192.168.0.24:38001/welcome
 </pre>
+
+[//]: # (------------------------------------------------------------------------------------------------------------)
+
+<br /><br />
+<a href="#DEPLOY-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
+
+## JENKINS JAVA SPRING_BOOT MAVEN SSH NOHUP PIPELINE
+
+In this topic we will use the Jenkinsfile to make a sample deploy in one virtual machine named ubuntu-vbox. 
+
+### Pre-requisites
+
+- SSH
+- GitHUB Repository
+- Java Version 17
+- Jenkins Version: 2.484
+- Spring Boot 2.6.4
+- Jenkinsfile Pipeline Script
+- Linux commands knowledge
+  - SSH KEYGEN
+  - SSH COPY ID
+- Virtualbox
+  - Ubuntu 20.04
+
+### Java Spring: Java Spring Boot Project Create
+
+To optimize the time of development and tests to check this tutorial document use the "simple api demo" repository
+hosted in the GitHUB website in the following address: https://github.com/huntercodexs/simple-api-demo.git
+branch pipelinr-release. After you have made the clone of this repository, check the required features in the Java
+Spring Boot pom.xml file project to run in the Server.
+
+- pom.xml file
+
+<code>
+    
+    ...
+    ...
+    ...
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>3.2.4</version>
+				<configuration>
+					<createDependencyReducedPom>false</createDependencyReducedPom>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.3.0</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<mainClass>com.huntercodexs.simpleapidemo.SimpleApiDemoApplication</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</code>
+
+- application.properties file
+
+<pre>
+server.port=38003
+</pre>
+
+- Jenkinsfile
+
+<pre>
+pipeline {
+	agent any
+
+	environment {
+		mavenHome = tool 'JENKINS_MAVEN_HOME-3.6.3'
+	}
+
+	tools {
+	    maven "JENKINS_MAVEN_HOME-3.6.3"
+		jdk 'java17-native'
+	}
+
+	stages {
+
+        stage('Checkout') {
+            steps {
+                git branch: 'pipeline-release', url: 'https://github.com/huntercodexs/simple-api-demo.git'
+            }
+        }
+
+		stage('Test'){
+			steps{
+				sh "mvn test"
+			}
+		}
+
+		stage('Build'){
+			steps {
+				sh "mvn clean install -DskipTests"
+			}
+		}
+
+		stage('Deploy') {
+            steps {
+                // Needs to generate key pairs between host and server: ssh-keygen + ssh-copy-id
+                sh '''
+                ssh ubuntu-vbox@192.168.0.24 "mkdir -p /home/ubuntu-vbox/Deployment/simple-api-demo/backup"
+                scp target/classes/application.properties ubuntu-vbox@192.168.0.24:/home/ubuntu-vbox/Deployment/simple-api-demo/application.properties
+                scp target/simple-api-demo-1.0.0-SNAPSHOT.jar ubuntu-vbox@192.168.0.24:/home/ubuntu-vbox/Deployment/simple-api-demo/simple-api-demo-1.0.0-SNAPSHOT.jar
+                ssh ubuntu-vbox@192.168.0.24 "nohup java -jar /home/ubuntu-vbox/Deployment/simple-api-demo/simple-api-demo-1.0.0-SNAPSHOT.jar --spring.config.location=/home/ubuntu-vbox/Deployment/simple-api-demo/application.properties > /home/ubuntu-vbox/Deployment/simple-api-demo/service.out 2> /home/ubuntu-vbox/Deployment/simple-api-demo/errors.txt < /dev/null &"
+                '''
+            }
+        }
+	}
+
+	post {
+        success {
+            echo 'Build and Deploy succeeded!'
+        }
+        failure {
+            echo 'Build or Deploy failed!'
+        }
+    }
+}
+</pre>
+
+The application properties file serve to set up the port number for the offer the service.
+
+### GitHUB: Create Repository
+
+> NOTE: This tutorial offer a simple/sample repository to tests or study the jenkins workflow process, and it means
+> that you don't need to create and publish a new repository just for tests goals, however, if you want to improve
+> your skill over deployment, you should to create yur own repository and publish it in your GitHub account.
+
+The information from GitHub account are:
+
+- GitHub Project URL: https://github.com/huntercodexs/simple-api-demo.git
+- GitHub Account Username: {USERNAME}
+- GitHub Account Password: {PASSWORD}
+- GitHub Account Branch: pipeline-release
+
+### Server: Configure the Server to deploy
+
+- Allow the SSH
+
+> see the [SSH-TIPS.md](SSH-TIPS.md) and [MFA-LINUX.md](MFA-LINUX.md)
+
+- Allow the SSH Port 22 in the firewall
+
+<pre>
+sudo ufw allow 38003/tcp
+sudo ufw reload
+</pre>
+
+> IMPORTANT: Create the ssh pub key in the Jenkins machine and in the Ubuntu machine, after that make sure you have
+> shared this keys between these machines using the ssh-copy-id user@server-ip
+
+- User: jenkins
+
+<pre>
+jenkins@c167e65d1537:~$ ssh-copy-id ubuntu-vbox@192.168.0.24
+/usr/bin/ssh-copy-id: INFO: Source of key(s) to be installed: "/var/jenkins_home/.ssh/id_rsa.pub"
+The authenticity of host '192.168.0.24 (192.168.0.24)' can't be established.
+ED25519 key fingerprint is SHA256:FTrC2tVhWPbYrfB0vcwiasBheEdxHJ24UNhEY1gro4c.
+This key is not known by any other names.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+/usr/bin/ssh-copy-id: INFO: attempting to log in with the new key(s), to filter out any that are already installed
+/usr/bin/ssh-copy-id: INFO: 1 key(s) remain to be installed -- if you are prompted now it is to install the new keys
+ubuntu-vbox@192.168.0.24's password: 
+
+Number of key(s) added: 1
+
+Now try logging into the machine, with:   "ssh 'ubuntu-vbox@192.168.0.24'"
+and check to make sure that only the key(s) you wanted were added.
+</pre>
+
+- User: root
+
+<pre>
+root@c167e65d1537:/var/jenkins_home# ssh-copy-id ubuntu-vbox@192.168.0.24
+/usr/bin/ssh-copy-id: INFO: Source of key(s) to be installed: "/root/.ssh/id_rsa.pub"
+/usr/bin/ssh-copy-id: INFO: attempting to log in with the new key(s), to filter out any that are already installed
+/usr/bin/ssh-copy-id: INFO: 1 key(s) remain to be installed -- if you are prompted now it is to install the new keys
+ubuntu-vbox@192.168.0.24's password: 
+
+Number of key(s) added: 1
+
+Now try logging into the machine, with:   "ssh 'ubuntu-vbox@192.168.0.24'"
+and check to make sure that only the key(s) you wanted were added.
+</pre>
+
+### Jenkins: Docker Container Create
+
+To create a Jenkins container use the repository: https://github.com/huntercodexs/docker-series.git.
+After you create the container, from the repository just mentioned, start the docker container using the following command
+
+<pre>
+docker-compose start
+</pre>
+
+Goto the web browser and type the http://localhost:39090/, make the proper configurations or entry with your login in
+the login screen. After you get access to the Jenkins Dashboard, you can create one job to automate the process of deploy.
+In order to make it you need to follow the instructions below:
+
+###### Jenkins: Plugin Deploy Install
+
+In this case you will need to install the following plugins
+
+- SSH Publisher (Optional)
+- SSH Plugin (Optional)
+- Publish Over SSH (Optional)
+- SSH Agent Plugin (Optional)
+- SSH Build Agents plugin (Optional)
+- SSH Credentials Plugin (Optional)
+- SSH Pipeline Steps (Optional)
+- SSH server (Optional)
+- Maven Integration plugin
+- Pipeline Maven Integration Plugin
+- Pipeline Maven Plugin API Version
+
+###### Jenkins: Configuration
+
+Once you have installed the correct plugins, you need to configure each of these plugins.
+
+- JDK
+
+  - Now, goto the Jenkins dashboard and lookup for "Manage Jenkins" > "Tools"
+  - Scroll down "JDK installations" and click on "Add JDK"
+  - Inform the Name and JAVA_HOME for each one
+
+- MAVEN
+
+  - Now, goto the Jenkins dashboard and lookup for "Manage Jenkins" > "Tools"
+  - Scroll down until "Maven installations" and click on "Add Maven" button
+  - Type the Name field, for example: MAVEN_HOME_DIR
+  - Type the MAVEN_HOME field, for example: /opt/maven
+
+Also, you can mark the option "Install automatically" and choose the Maven Version to apply, in case you
+need more information about Maven Installation, just follow this document [NEXUS_AND_MAVEN.md](NEXUS_AND_MAVEN.md)
+
+###### Jenkins: Job Create
+
+To create a new job that means to configure one workflow to deploy any application, follow these steps
+
+- Goto Jenkins Dashboard
+- Click on "New Item"
+- Type a name in the input "Enter an item name"
+- Choose the "Pipeline" as project type
+- Click on OK
+
+Now in the Configuration form page fill entry with the following details
+
+- General
+  - Description: PIPELINE - SIMPLE API DEMO
+  - GitHub project: https://github.com/huntercodexs/simple-api-demo.git/
+- Build Triggers
+  - let as is
+- Advanced Project Options
+  - let as is
+- Pipeline
+  - Definition: Pipeline script from SCM
+    - SCM: Git 
+      - Repository URL: https://github.com/huntercodexs/simple-api-demo.git
+      - Credentials: Choose the credentials
+      - Branch Specifier (blank for 'any'): */pipeline-release
+    - Script Path: Jenkinsfile
+
+Now you can just click on "Build Now" in the job dashboard to deploy effectively this job. After build and deploy
+successfully, goto the browser or postman tool and make one request like below:
+
+<pre>
+GET http://192.168.0.24:38003/welcome
+</pre>
+
+> Remember that in this case we are using the Jenkinsfile setup to configure every step and run the deployment 
+> automatically when the trigger were dispatched.
+
+If everything was fine you should be able to see something like below in your Jenkins Job Dashboard
+
+![jenkins-deploy-10.png](midias/images/jenkins-deploy/jenkins-deploy-10.png)
+
+[//]: # (------------------------------------------------------------------------------------------------------------)
+
+<br /><br />
+<a href="#DEPLOY-HELPER"><img src="midias/images/top.png" width="60" height="30" /></a>
 
 ## Sources References
 
