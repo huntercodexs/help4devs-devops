@@ -1,11 +1,17 @@
 # DEPLOY HELPER
 Make a deployment using one specific and easy way
 
-# SUMMARY
+## Summary
 
 - <a href="#JENKINS-JAVA-SPRING_BOOT-MAVEN-TOMCAT">JENKINS JAVA SPRING-BOOT MAVEN TOMCAT</a>
 - <a href="#JENKINS-JAVA-SPRING_BOOT-MAVEN-SSH-NOHUP">JENKINS JAVA SPRING-BOOT MAVEN SSH NOHUP</a>
 - <a href="#JENKINS-JAVA-SPRING_BOOT-MAVEN-SSH-NOHUP-PIPELINE">JENKINS JAVA SPRING-BOOT MAVEN SSH NOHUP PIPELINE</a>
+
+## Overview
+
+Blow we have a few examples for use case of Jenkins as a CI/CD tool
+
+![deploy-jenkins-cases.png](midias/images/jenkins-deploy/deploy-jenkins-cases.png)
 
 [//]: # (------------------------------------------------------------------------------------------------------------)
 
