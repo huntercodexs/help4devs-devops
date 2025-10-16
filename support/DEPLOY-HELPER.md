@@ -9,7 +9,7 @@ Make a deployment using one specific and easy way
 
 ## Overview
 
-Blow we have a few examples for use case of Jenkins as a CI/CD tool
+Below we have a few examples for use case of Jenkins as a CI/CD tool
 
 ![deploy-jenkins-cases.png](midias/images/jenkins-deploy/deploy-jenkins-cases.png)
 

@@ -64,7 +64,7 @@ This documentation cover the subjects below
 
 </code>
 
-- Crete one java project and configure the pom.xml as something like below
+- Create one java project and configure the pom.xml as something like below
 
 <code>
 
@@ -626,8 +626,6 @@ For new projects since February 2021
     </distributionManagement>
 
 </code>
-
-
 
 #### Maven Plugins
 

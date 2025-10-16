@@ -109,9 +109,9 @@ sudo kubeadm init --pod-network-cidr=10.244.0.0/16
 Create the folder and the configuration file for kubernetes
 
 <pre>
-mkdir -p $HOME/.kube
-sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-sudo chown $(id -u):$(id -g) $HOME/.kube/config
+mkdir -p /home/$USER/.kube
+sudo cp -i /etc/kubernetes/admin.conf /home/$USER/.kube/config
+sudo chown $(id -u):$(id -g) /home/$USER/.kube/config
 </pre>
 
 The config file should have the following content
@@ -147,22 +147,49 @@ kubeadm join --discovery-token abcdef.1234567890abcdef --discovery token-ca-cert
 <pre>
 #!/bin/bash
 
+CLUSTER=$1
+
+if [[ !"$CLUSTER" || "$CLUSTER" == "" ]];
+then
+    echo ""
+    echo "WARNING: There is not clusters in the parameters !"
+    echo ""
+
+    CLUSTER=""
+fi
+
 echo "This process can't to be undo, Continue ?"
 echo "Press [Enter] to continue, Press [Ctrl+C] to Abort "
 read OP
 
+echo "Stopping minikube, kind, kubectl and services"
+minikube stop
+minikube remove
+minikube delete
+kind delete cluster
+kind delete cluster $CLUSTER
+kubectl delete cluster
+kubectl delete cluster $CLUSTER
+
+sleep 2
+
 echo "Locking firewall - port 8080"
-#sudo ufw delete allow 8080/tcp
-#sudo ufw reload
+sudo ufw delete allow 80/tcp
+sudo ufw delete allow 8080/tcp
+sudo ufw delete allow 30000/tcp
+sudo ufw delete allow 38080/tcp
+sudo ufw delete allow 38087/tcp
+sudo ufw delete allow 39090/tcp
+sudo ufw reload
 
 sleep 2
 
 echo "Stopping and removing service - kubernetes.service"
-#sudo systemctl stop kubernetes.service
-#sudo service kubernetes stop
-#sudo rm -f /etc/systemd/system/kubernetes.service
-#sudo rm -f /etc/systemd/system/multi-user.target.wants/kubernetes.service
-#sudo systemctl daemon-reload
+sudo systemctl stop kubelet
+sudo systemctl stop kubernetes
+sudo rm -f /etc/systemd/system/kubernetes.service
+sudo rm -f /etc/systemd/system/multi-user.target.wants/kubernetes.service
+sudo systemctl daemon-reload
 
 sleep 2
 
@@ -182,7 +209,9 @@ cd /
 sudo rm -rf /etc/apt/sources.list.d/kubernetes.list
 sudo rm -rf /etc/kubernetes/
 sudo rm -rf /usr/local/bin/kind
-sudo rm -rf $HOME/.kube
+sudo rm -rf /usr/local/bin/minikube
+sudo rm -rf /home/$USER/.kube
+sudo rm -rf /home/$USER/.minikube
 sudo find . | grep -v home | grep kube | xargs -i sudo rm -rf {} >> /dev/null 2>&1
 
 sleep 2
@@ -332,22 +361,49 @@ sudo mv ./kind /usr/local/bin/kind
 <pre>
 #!/bin/bash
 
+CLUSTER=$1
+
+if [[ !"$CLUSTER" || "$CLUSTER" == "" ]];
+then
+    echo ""
+    echo "WARNING: There is not clusters in the parameters !"
+    echo ""
+
+    CLUSTER=""
+fi
+
 echo "This process can't to be undo, Continue ?"
 echo "Press [Enter] to continue, Press [Ctrl+C] to Abort "
 read OP
 
+echo "Stopping minikube, kind, kubectl and services"
+minikube stop
+minikube remove
+minikube delete
+kind delete cluster
+kind delete cluster $CLUSTER
+kubectl delete cluster
+kubectl delete cluster $CLUSTER
+
+sleep 2
+
 echo "Locking firewall - port 8080"
-#sudo ufw delete allow 8080/tcp
-#sudo ufw reload
+sudo ufw delete allow 80/tcp
+sudo ufw delete allow 8080/tcp
+sudo ufw delete allow 30000/tcp
+sudo ufw delete allow 38080/tcp
+sudo ufw delete allow 38087/tcp
+sudo ufw delete allow 39090/tcp
+sudo ufw reload
 
 sleep 2
 
 echo "Stopping and removing service - kubernetes.service"
-#sudo systemctl stop kubernetes.service
-#sudo service kubernetes stop
-#sudo rm -f /etc/systemd/system/kubernetes.service
-#sudo rm -f /etc/systemd/system/multi-user.target.wants/kubernetes.service
-#sudo systemctl daemon-reload
+sudo systemctl stop kubelet
+sudo systemctl stop kubernetes
+sudo rm -f /etc/systemd/system/kubernetes.service
+sudo rm -f /etc/systemd/system/multi-user.target.wants/kubernetes.service
+sudo systemctl daemon-reload
 
 sleep 2
 
@@ -367,7 +423,9 @@ cd /
 sudo rm -rf /etc/apt/sources.list.d/kubernetes.list
 sudo rm -rf /etc/kubernetes/
 sudo rm -rf /usr/local/bin/kind
-sudo rm -r $HOME/.kube/
+sudo rm -rf /usr/local/bin/minikube
+sudo rm -rf /home/$USER/.kube
+sudo rm -rf /home/$USER/.minikube
 sudo find . | grep -v home | grep kube | xargs -i sudo rm -rf {} >> /dev/null 2>&1
 
 sleep 2

@@ -1,7 +1,7 @@
 
 # JENKINS INSTALL
 
-> The current version is 2.464 and requires Java 17 on Ubuntu 8.10
+> The current version is 2.464 and requires Java 17 on Ubuntu 20.04
 
 > The current version is 2.452.2 and requires Java 17 on Almalinux 8.10
 
